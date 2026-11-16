@@ -1288,3 +1288,10 @@ pm.cmd test passed (125/125); dashboard inline scripts validated; Wrangler dry-r
 - Daily source audit workflow now targets `[self-hosted, Windows, X64]`, removes `continue-on-error`, runs the full audit even after earlier failures, and preserves audit artifacts. The 30-minute Engine Runner remains hosted Ubuntu.
 - Windows runner service `actions.runner.pakthaitech-ai-pakthaitech.DESKTOP-MRO7VUR` observed Running / Automatic; GitHub previously showed the runner Idle. Post-push execution on the self-hosted runner must be confirmed separately.
 - No production deploy, D1 mutation, provider/billing change, external message, customer/partner outreach, quote, purchase or order was performed.
+
+
+## 2026-11-16 — Self-hosted workflow integration status
+- Daily audit workflow is committed on `main` as `be4de41`; it runs directly from the local `D:\pakthai` checkout and uses the PC's Node.js/npm, with clean-main-revision checks and strict npm audit exit codes.
+- Local remediation remains validated: Wrangler 4.163.0; clean `npm ci`; 149/149 tests; production and full npm audit 0 vulnerabilities; Wrangler dry-run PASS.
+- GitHub self-hosted CI execution is NOT YET VERIFIED. Earlier runs encountered Windows long-path/shell issues, external action download timeouts, a WebSocket connectivity probe failure, and one local Git safe-directory check failure. The latest run `43891088323` was queued at last check.
+- Runner service is Running / Automatic, but remote command context is non-admin; service restart requires elevated Administrator PowerShell. Use the exact service command recorded in the audit report.

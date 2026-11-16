@@ -776,3 +776,10 @@ The Owner Buyer Discovery and market prospect tables now display an explainable 
 - Daily source audit workflow now targets the Windows self-hosted runner and fails closed on dependency audit findings; full audit runs even when an earlier step fails and its artifact is uploaded when available. The separate 30-minute Engine Runner remains on hosted Ubuntu.
 - Windows runner service is Running / Automatic; confirm the first post-push workflow run in GitHub before treating self-hosted execution as VERIFIED.
 - No production Worker/Pages deployment, production database mutation, billing/provider change, outbound message, commercial commitment or order was performed in this audit.
+
+
+## 2026-11-16 — GitHub self-hosted execution boundary
+- The daily source audit workflow is committed as `be4de41` and configured to use the local `D:\pakthai` checkout directly, without external GitHub Actions downloads. It checks a clean `main` checkout and trigger SHA, then runs locked install, tests, production audit and complete audit.
+- Local source/dependency audit is PASS: Wrangler 4.163.0; clean `npm ci`; 149/149 tests; production and complete npm audits 0 vulnerabilities; Wrangler dry-run PASS.
+- GitHub-side execution on `DESKTOP-MRO7VUR` remains pending; latest run `43891088323` was queued. Do not report the self-hosted CI integration as complete until a full successful GitHub Actions run is confirmed.
+- Runner Windows service remains Running / Automatic. The remote session is non-admin; an Administrator PowerShell service restart is required to refresh the runner if the queued job remains unassigned.

@@ -46,3 +46,26 @@
 - WhatsApp automation remains disabled; Meta phone verification/delivery is not to be bypassed.
 - Gmail real delivery, push notification receipt, Store Analytics funnel events, verified FX/landed-cost rates, and actual buyer/opportunity creation remain evidence-gated as recorded in the canonical project notes.
 - Keep the Windows machine powered on and connected for scheduled self-hosted audits. If it is offline, GitHub will leave the job queued until a matching runner is available.
+
+
+## Self-hosted GitHub Actions integration — 2026-11-16
+The repository-side workflow is now configured to use the local Windows checkout directly (no third-party `uses:` actions), Node/npm already installed on the PC, and a clean/main/revision guard before running tests and audits. The current workflow commit is `be4de41`.
+
+Integration attempts and observed outcomes:
+- Run `43884092805`: runner accepted the job; checkout failed on a Windows long-path file and the default `pwsh` shell was unavailable.
+- Run `43885268652`: cancelled while the broad sparse checkout stalled.
+- Run `43887595916`: cancelled after the runner ActionManager timed out while downloading external GitHub Actions.
+- Run `43889352202`: failed during the runner job due to a GitHub Actions service WebSocket/connectivity probe failure.
+- Run `43890573425`: local repository verification step exited non-zero. The Git safe-directory setting was normalized to `D:/pakthai` in the follow-up workflow commit.
+- Run `43891088323`: queued and not yet assigned to a runner at last check.
+
+Current machine evidence:
+- Windows runner service is `Running` with `Automatic` startup.
+- `Runner.Listener` process is responsive and has an established TCP 443 connection.
+- The remote command session is not elevated (`IsAdministrator=False`); restarting the Windows service was denied. No attempt was made to bypass elevation.
+- The local Git checkout is clean on `main`, at the pushed workflow revision. Node.js 24.20.0 and npm 11.19.0 are available in the machine PATH.
+- ACL inspection showed inherited Modify access for Authenticated Users on `D:\pakthai`; the runner service account is `NT AUTHORITY\NETWORK SERVICE`.
+
+Next operational step: from an elevated Administrator PowerShell on the PC, restart the runner service with:
+`Restart-Service -Name "actions.runner.pakthaitech-ai-pakthaitech.DESKTOP-MRO7VUR"`
+Then confirm the service returns to Running and check whether queued run `43891088323` is assigned to `DESKTOP-MRO7VUR`. If the runner still does not accept the job, investigate outbound WebSocket connectivity to `*.actions.githubusercontent.com` over TCP 443. Do not mark GitHub-side self-hosted execution verified until a full run completes successfully.
