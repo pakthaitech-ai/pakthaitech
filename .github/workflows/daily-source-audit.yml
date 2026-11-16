@@ -31,40 +31,17 @@ jobs:
         working-directory: .
         shell: powershell
     steps:
-      - name: Runner workspace bootstrap
-        working-directory: .
-        run: |
-          $diag = 'C:\actions-runner\_diag\pakthai-runner-bootstrap.log'
-          "Started: $(Get-Date -Format o)" | Out-File -FilePath $diag -Encoding utf8
-          "Identity: $([Security.Principal.WindowsIdentity]::GetCurrent().Name)" | Add-Content -Path $diag
-          "Current directory: $((Get-Location).Path)" | Add-Content -Path $diag
-          "GITHUB_WORKSPACE: $env:GITHUB_WORKSPACE" | Add-Content -Path $diag
-          "RUNNER_TEMP: $env:RUNNER_TEMP" | Add-Content -Path $diag
-          Start-Sleep -Seconds 8
-          "Bootstrap completed." | Add-Content -Path $diag
-          Write-Output "Runner PowerShell bootstrap completed."
-
       - name: Clone source into isolated runner workspace
         working-directory: .
         timeout-minutes: 10
         run: |
           $git = 'C:\Program Files\Git\cmd\git.exe'
           $source = 'C:\actions-runner\_work\pakthaitech\pakthaitech\source'
-          $diag = 'C:\actions-runner\_diag\pakthai-clone-step.log'
-          "Clone step started: $(Get-Date -Format o)" | Out-File -FilePath $diag -Encoding utf8
-          try {
-            $env:GIT_TERMINAL_PROMPT = '0'
-            if (Test-Path $source) { Remove-Item -LiteralPath $source -Recurse -Force }
-            New-Item -ItemType Directory -Force -Path $source | Out-Null
-            "Starting Git clone to $source" | Add-Content -Path $diag
-            & $git -c http.sslBackend=openssl -c core.longpaths=true clone --filter=blob:none --no-checkout --depth 1 --single-branch --branch main https://github.com/pakthaitech-ai/pakthaitech.git $source
-            $exit = $LASTEXITCODE
-            "Git clone exit=$exit" | Add-Content -Path $diag
-            if ($exit -ne 0) { throw "Git clone failed with exit code $exit." }
-          } catch {
-            $_ | Out-String | Add-Content -Path $diag
-            throw
-          }
+          Write-Output "Cloning repository into $source"
+          if (Test-Path $source) { Remove-Item -LiteralPath $source -Recurse -Force }
+          New-Item -ItemType Directory -Force -Path $source | Out-Null
+          & $git -c http.sslBackend=openssl -c core.longpaths=true clone --filter=blob:none --no-checkout --depth 1 --single-branch --branch main https://github.com/pakthaitech-ai/pakthaitech.git $source
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Configure sparse checkout
         working-directory: .
