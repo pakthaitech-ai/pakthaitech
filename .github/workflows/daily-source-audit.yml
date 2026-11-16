@@ -36,21 +36,22 @@ jobs:
         run: |
           $git = 'C:\Program Files\Git\cmd\git.exe'
           $repo = 'D:\pakthai'
-          $dirty = & $git -c "safe.directory=$repo" -C $repo status --porcelain
+          $safe = 'D:/pakthai'
+          $dirty = & $git -c "safe.directory=$safe" -C $repo status --porcelain
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           if ($dirty) { throw 'Local checkout is not clean; refusing to audit modified source.' }
-          $branch = & $git -c "safe.directory=$repo" -C $repo branch --show-current
+          $branch = & $git -c "safe.directory=$safe" -C $repo branch --show-current
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           if ($branch -ne 'main') { throw "Expected main branch; found $branch." }
-          $head = & $git -c "safe.directory=$repo" -C $repo rev-parse HEAD
+          $head = & $git -c "safe.directory=$safe" -C $repo rev-parse HEAD
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           if ($head -ne $env:GITHUB_SHA) {
-            & $git -c "safe.directory=$repo" -C $repo pull --ff-only origin main
+            & $git -c "safe.directory=$safe" -C $repo pull --ff-only origin main
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-            $head = & $git -c "safe.directory=$repo" -C $repo rev-parse HEAD
+            $head = & $git -c "safe.directory=$safe" -C $repo rev-parse HEAD
           }
           if ($head -ne $env:GITHUB_SHA) { throw "Local HEAD $head does not match workflow revision $env:GITHUB_SHA." }
-          Write-Output "Auditing repository revision $head"
+          Write-Output "Auditing repository revision $head; branch $branch; working tree clean."
 
       - name: Confirm Node.js and npm
         run: |
