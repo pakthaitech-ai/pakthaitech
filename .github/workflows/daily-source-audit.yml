@@ -28,7 +28,7 @@ jobs:
     timeout-minutes: 30
     defaults:
       run:
-        working-directory: source/PakThai-Tech-AI-Sourcing-FINAL
+        working-directory: .
         shell: powershell
     steps:
       - name: Clone source into isolated runner workspace
@@ -78,29 +78,34 @@ jobs:
           }
 
       - name: Confirm Node.js and npm
+        working-directory: source/PakThai-Tech-AI-Sourcing-FINAL
         run: |
           & 'C:\Program Files\nodejs\node.exe' --version
           & 'C:\Program Files\nodejs\npm.cmd' --version
 
       - name: Install locked dependencies
         id: install
+        working-directory: source/PakThai-Tech-AI-Sourcing-FINAL
         run: |
           & 'C:\Program Files\nodejs\npm.cmd' ci --no-audit --no-fund
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Run project test suite
+        working-directory: source/PakThai-Tech-AI-Sourcing-FINAL
         run: |
           & 'C:\Program Files\nodejs\npm.cmd' test
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Run production dependency audit
         if: always() && steps.install.outcome == 'success'
+        working-directory: source/PakThai-Tech-AI-Sourcing-FINAL
         run: |
           & 'C:\Program Files\nodejs\npm.cmd' audit --omit=dev --audit-level=moderate
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Run complete dependency audit
         if: always() && steps.install.outcome == 'success'
+        working-directory: source/PakThai-Tech-AI-Sourcing-FINAL
         run: |
           $env:PATH = 'C:\Program Files\nodejs;' + $env:PATH
           $report = Join-Path $env:RUNNER_TEMP "pakthai-npm-audit-full-$env:GITHUB_RUN_NUMBER.json"
