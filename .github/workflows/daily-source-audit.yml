@@ -36,50 +36,62 @@ jobs:
         run: |
           $git = 'C:\Program Files\Git\cmd\git.exe'
           $repo = 'D:\pakthai'
-          $safe = 'D:/pakthai'
-          $dirty = & $git -c "safe.directory=$safe" -C $repo status --porcelain
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Write-Output "Runner identity: $([Security.Principal.WindowsIdentity]::GetCurrent().Name)"
+          Write-Output "Repository path exists: $(Test-Path $repo)"
+          Write-Output "Git executable exists: $(Test-Path $git)"
+          $dirty = & $git -c 'safe.directory=*' -C $repo status --porcelain
+          $gitExit = $LASTEXITCODE
+          Write-Output "Git status exit: $gitExit; dirty output length: $($dirty.Length)"
+          if ($gitExit -ne 0) { throw "Git status failed with exit code $gitExit." }
           if ($dirty) { throw 'Local checkout is not clean; refusing to audit modified source.' }
-          $branch = & $git -c "safe.directory=$safe" -C $repo branch --show-current
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $branch = & $git -c 'safe.directory=*' -C $repo branch --show-current
+          $gitExit = $LASTEXITCODE
+          Write-Output "Git branch exit: $gitExit; branch: $branch"
+          if ($gitExit -ne 0) { throw "Git branch check failed with exit code $gitExit." }
           if ($branch -ne 'main') { throw "Expected main branch; found $branch." }
-          $head = & $git -c "safe.directory=$safe" -C $repo rev-parse HEAD
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $head = & $git -c 'safe.directory=*' -C $repo rev-parse HEAD
+          $gitExit = $LASTEXITCODE
+          Write-Output "Git HEAD exit: $gitExit; local HEAD: $head; trigger SHA: $env:GITHUB_SHA"
+          if ($gitExit -ne 0) { throw "Git HEAD check failed with exit code $gitExit." }
           if ($head -ne $env:GITHUB_SHA) {
-            & $git -c "safe.directory=$safe" -C $repo merge-base --is-ancestor $env:GITHUB_SHA $head
+            & $git -c 'safe.directory=*' -C $repo merge-base --is-ancestor $env:GITHUB_SHA $head
             $ancestorExit = $LASTEXITCODE
-            if ($ancestorExit -ne 0) {
-              & $git -c "safe.directory=$safe" -C $repo pull --ff-only origin main
-              if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-              $head = & $git -c "safe.directory=$safe" -C $repo rev-parse HEAD
-              if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-              & $git -c "safe.directory=$safe" -C $repo merge-base --is-ancestor $env:GITHUB_SHA $head
-              if ($LASTEXITCODE -ne 0) { throw 'Local main does not contain the workflow trigger revision after fast-forward sync.' }
-            }
+            Write-Output "Trigger SHA ancestry exit: $ancestorExit"
+            if ($ancestorExit -ne 0) { throw 'Local main does not contain the workflow trigger revision.' }
           }
-          Write-Output "Auditing local main revision $head; trigger revision $env:GITHUB_SHA; working tree clean."
+          Write-Output "Auditing local main revision $head; working tree clean."
 
       - name: Confirm Node.js and npm
         run: |
-          node --version
-          npm --version
+          & 'C:\Program Files\nodejs\node.exe' --version
+          & 'C:\Program Files\nodejs\npm.cmd' --version
 
       - name: Install locked dependencies
-        run: npm ci --no-audit --no-fund
+        id: install
+        run: |
+          & 'C:\Program Files\nodejs\npm.cmd' ci --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Run project test suite
-        run: npm test
+        run: |
+          & 'C:\Program Files\nodejs\npm.cmd' test
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Run production dependency audit
-        run: npm audit --omit=dev --audit-level=moderate
+        if: always() && steps.install.outcome == 'success'
+        run: |
+          & 'C:\Program Files\nodejs\npm.cmd' audit --omit=dev --audit-level=moderate
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Run complete dependency audit
-        if: always()
+        if: always() && steps.install.outcome == 'success'
         run: |
+          $env:PATH = 'C:\Program Files\nodejs;' + $env:PATH
           $report = Join-Path $env:RUNNER_TEMP "pakthai-npm-audit-full-$env:GITHUB_RUN_NUMBER.json"
           cmd.exe /c "npm audit --json > `"$report`""
           $auditExit = $LASTEXITCODE
-          node -e "const p=JSON.parse(require('node:fs').readFileSync(process.argv[1],'utf8')); console.log(JSON.stringify(p.metadata?.vulnerabilities ?? {},null,2));" "$report"
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & 'C:\Program Files\nodejs\node.exe' -e "const p=JSON.parse(require('node:fs').readFileSync(process.argv[1],'utf8')); console.log(JSON.stringify(p.metadata?.vulnerabilities ?? {},null,2));" "$report"
+          $nodeExit = $LASTEXITCODE
+          if ($nodeExit -ne 0) { exit $nodeExit }
           Write-Output "Full audit JSON saved to $report"
           if ($auditExit -ne 0) { exit $auditExit }

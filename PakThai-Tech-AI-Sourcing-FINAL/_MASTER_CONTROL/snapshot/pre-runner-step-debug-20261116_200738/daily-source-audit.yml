@@ -1,0 +1,85 @@
+name: PakThai Daily Source Audit
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 07:00 Pakistan Standard Time (UTC+5)
+    - cron: "0 2 * * *"
+  push:
+    branches: [main]
+    paths:
+      - "PakThai-Tech-AI-Sourcing-FINAL/src/**"
+      - "PakThai-Tech-AI-Sourcing-FINAL/tools/**"
+      - "PakThai-Tech-AI-Sourcing-FINAL/package.json"
+      - "PakThai-Tech-AI-Sourcing-FINAL/package-lock.json"
+      - ".github/workflows/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pakthai-source-audit
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: Tests and dependency security audit
+    runs-on: [self-hosted, Windows, X64]
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: D:/pakthai/PakThai-Tech-AI-Sourcing-FINAL
+        shell: powershell
+    steps:
+      - name: Verify local main checkout matches or contains GitHub revision
+        working-directory: D:/pakthai
+        run: |
+          $git = 'C:\Program Files\Git\cmd\git.exe'
+          $repo = 'D:\pakthai'
+          $safe = 'D:/pakthai'
+          $dirty = & $git -c "safe.directory=$safe" -C $repo status --porcelain
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if ($dirty) { throw 'Local checkout is not clean; refusing to audit modified source.' }
+          $branch = & $git -c "safe.directory=$safe" -C $repo branch --show-current
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if ($branch -ne 'main') { throw "Expected main branch; found $branch." }
+          $head = & $git -c "safe.directory=$safe" -C $repo rev-parse HEAD
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if ($head -ne $env:GITHUB_SHA) {
+            & $git -c "safe.directory=$safe" -C $repo merge-base --is-ancestor $env:GITHUB_SHA $head
+            $ancestorExit = $LASTEXITCODE
+            if ($ancestorExit -ne 0) {
+              & $git -c "safe.directory=$safe" -C $repo pull --ff-only origin main
+              if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+              $head = & $git -c "safe.directory=$safe" -C $repo rev-parse HEAD
+              if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+              & $git -c "safe.directory=$safe" -C $repo merge-base --is-ancestor $env:GITHUB_SHA $head
+              if ($LASTEXITCODE -ne 0) { throw 'Local main does not contain the workflow trigger revision after fast-forward sync.' }
+            }
+          }
+          Write-Output "Auditing local main revision $head; trigger revision $env:GITHUB_SHA; working tree clean."
+
+      - name: Confirm Node.js and npm
+        run: |
+          node --version
+          npm --version
+
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Run project test suite
+        run: npm test
+
+      - name: Run production dependency audit
+        run: npm audit --omit=dev --audit-level=moderate
+
+      - name: Run complete dependency audit
+        if: always()
+        run: |
+          $report = Join-Path $env:RUNNER_TEMP "pakthai-npm-audit-full-$env:GITHUB_RUN_NUMBER.json"
+          cmd.exe /c "npm audit --json > `"$report`""
+          $auditExit = $LASTEXITCODE
+          node -e "const p=JSON.parse(require('node:fs').readFileSync(process.argv[1],'utf8')); console.log(JSON.stringify(p.metadata?.vulnerabilities ?? {},null,2));" "$report"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Write-Output "Full audit JSON saved to $report"
+          if ($auditExit -ne 0) { exit $auditExit }
