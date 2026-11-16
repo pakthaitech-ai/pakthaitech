@@ -1279,3 +1279,12 @@ pm.cmd test passed (125/125); dashboard inline scripts validated; Wrangler dry-r
 ## 2026-10-28 — Final smoke check and delayed discovery rendering note
 - Final production smoke check after Voice Assistant repair: Engine HTML HTTP 200; U3 status marker and U4 status marker present; rendered Voice Assistant now preserves the whitespace regex; `/api/health` HTTP 200; `/api/catalog` HTTP 200 with 467 products. Store HTML HTTP 200; comparison panel, versioned app.js URL, service-worker cache v3 and comparison controls are all present.
 - Buyer Discovery's `Loading prospects...` label remained briefly after a 2.4-second wait, but cleared after a 10-second wait; the status then reported Free OpenStreetMap search ready. `/api/buyer-prospects` returned real unreviewed prospects, so this was delayed rendering, not an empty or fabricated dataset. No new prospects were created by the audit.
+
+
+## 2026-11-16 — Daily source security audit and self-hosted runner activation
+- Report: `_MASTER_CONTROL/reports/DAILY_SOURCE_SECURITY_AUDIT_2026-11-16.md`.
+- Initial full npm audit identified four high-severity development-tool dependency entries (Wrangler 4.141.0 and transitive Miniflare/Sharp/Undici); production dependencies had zero findings. Updated Wrangler to 4.163.0 and regenerated the lockfile.
+- Post-fix clean `npm ci` PASS; project tests 149/149 PASS; dashboard inline validation PASS (HTTP 200, 2 scripts); production and full npm audits both report 0 vulnerabilities; Wrangler 4.163.0 dry-run PASS (591.35 KiB / 131.71 KiB gzip).
+- Daily source audit workflow now targets `[self-hosted, Windows, X64]`, removes `continue-on-error`, runs the full audit even after earlier failures, and preserves audit artifacts. The 30-minute Engine Runner remains hosted Ubuntu.
+- Windows runner service `actions.runner.pakthaitech-ai-pakthaitech.DESKTOP-MRO7VUR` observed Running / Automatic; GitHub previously showed the runner Idle. Post-push execution on the self-hosted runner must be confirmed separately.
+- No production deploy, D1 mutation, provider/billing change, external message, customer/partner outreach, quote, purchase or order was performed.

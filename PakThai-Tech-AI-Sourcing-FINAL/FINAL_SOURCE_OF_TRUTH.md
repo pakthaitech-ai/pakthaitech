@@ -767,3 +767,12 @@ The Owner Buyer Discovery and market prospect tables now display an explainable 
 ## 2026-10-28 — Final smoke check and delayed discovery rendering note
 - Final production smoke check after Voice Assistant repair: Engine HTML HTTP 200; U3 status marker and U4 status marker present; rendered Voice Assistant now preserves the whitespace regex; `/api/health` HTTP 200; `/api/catalog` HTTP 200 with 467 products. Store HTML HTTP 200; comparison panel, versioned app.js URL, service-worker cache v3 and comparison controls are all present.
 - Buyer Discovery's `Loading prospects...` label remained briefly after a 2.4-second wait, but cleared after a 10-second wait; the status then reported Free OpenStreetMap search ready. `/api/buyer-prospects` returned real unreviewed prospects, so this was delayed rendering, not an empty or fabricated dataset. No new prospects were created by the audit.
+
+
+## 2026-11-16 — Latest operational source/dependency audit
+- Detailed evidence: `_MASTER_CONTROL/reports/DAILY_SOURCE_SECURITY_AUDIT_2026-11-16.md`.
+- Wrangler dev dependency updated to 4.163.0; the previous full npm audit had 4 high-severity development-tool entries. After clean `npm ci`, full and production npm audits both report 0 vulnerabilities.
+- Local project suite: 149/149 PASS; dashboard inline validation PASS (HTTP 200, 2 scripts); Wrangler 4.163.0 dry-run PASS (591.35 KiB / 131.71 KiB gzip).
+- Daily source audit workflow now targets the Windows self-hosted runner and fails closed on dependency audit findings; full audit runs even when an earlier step fails and its artifact is uploaded when available. The separate 30-minute Engine Runner remains on hosted Ubuntu.
+- Windows runner service is Running / Automatic; confirm the first post-push workflow run in GitHub before treating self-hosted execution as VERIFIED.
+- No production Worker/Pages deployment, production database mutation, billing/provider change, outbound message, commercial commitment or order was performed in this audit.
