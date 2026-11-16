@@ -69,3 +69,10 @@ Current machine evidence:
 Next operational step: from an elevated Administrator PowerShell on the PC, restart the runner service with:
 `Restart-Service -Name "actions.runner.pakthaitech-ai-pakthaitech.DESKTOP-MRO7VUR"`
 Then confirm the service returns to Running and check whether queued run `43891088323` is assigned to `DESKTOP-MRO7VUR`. If the runner still does not accept the job, investigate outbound WebSocket connectivity to `*.actions.githubusercontent.com` over TCP 443. Do not mark GitHub-side self-hosted execution verified until a full run completes successfully.
+
+
+## Final checkpoint — 2026-11-16
+- Latest workflow commit: `243c7b8`. The local revision guard now accepts a clean local `main` that contains the triggering SHA (for example, when only documentation commits follow the trigger), while refusing dirty or divergent checkouts.
+- Latest GitHub audit run: `43892271305` (run #9), status `queued` at final check; no runner assignment had occurred yet.
+- Runner service remains `Running` / `Automatic`; `Runner.Listener` is responsive. The remote command context is non-administrator, so service restart could not be performed from this session.
+- Required handoff: execute the one-line `Restart-Service` command above from elevated Administrator PowerShell, then verify run `43892271305` is assigned to `DESKTOP-MRO7VUR` and completes. Until then, the local audit is PASS but GitHub self-hosted scheduled execution remains PENDING.

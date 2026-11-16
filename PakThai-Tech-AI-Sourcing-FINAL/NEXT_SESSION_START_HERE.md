@@ -280,3 +280,11 @@ Read this first next session: `_MASTER_CONTROL/reports/OVERNIGHT_CHECKPOINT_2026
 - Daily source audit workflow commit: `be4de41`. It now targets the Windows self-hosted runner and runs from local `D:\pakthai` without downloading external actions.
 - GitHub-side self-hosted run is not yet verified. Latest run `43891088323` was queued; earlier runs had checkout/shell, action-download, WebSocket, and safe-directory issues.
 - From elevated Administrator PowerShell, run: `Restart-Service -Name "actions.runner.pakthaitech-ai-pakthaitech.DESKTOP-MRO7VUR"`. Then verify the queued run is assigned to `DESKTOP-MRO7VUR` and completes successfully.
+
+
+## Final checkpoint — 2026-11-16
+- Latest workflow commit: `243c7b8`; latest GitHub run: `43892271305` (#9), still queued without runner assignment.
+- Local audit: PASS — Wrangler 4.163.0, clean npm ci, 149/149 tests, production/full npm audit 0 vulnerabilities, Wrangler dry-run PASS.
+- Runner service is Running / Automatic, but the remote session is not Administrator. In elevated PowerShell, run:
+  `Restart-Service -Name "actions.runner.pakthaitech-ai-pakthaitech.DESKTOP-MRO7VUR"`
+- Then check that GitHub assigns queued run #9 to `DESKTOP-MRO7VUR` and it completes. Until then, GitHub self-hosted execution is pending, not verified.

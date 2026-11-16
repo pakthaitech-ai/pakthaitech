@@ -1295,3 +1295,9 @@ pm.cmd test passed (125/125); dashboard inline scripts validated; Wrangler dry-r
 - Local remediation remains validated: Wrangler 4.163.0; clean `npm ci`; 149/149 tests; production and full npm audit 0 vulnerabilities; Wrangler dry-run PASS.
 - GitHub self-hosted CI execution is NOT YET VERIFIED. Earlier runs encountered Windows long-path/shell issues, external action download timeouts, a WebSocket connectivity probe failure, and one local Git safe-directory check failure. The latest run `43891088323` was queued at last check.
 - Runner service is Running / Automatic, but remote command context is non-admin; service restart requires elevated Administrator PowerShell. Use the exact service command recorded in the audit report.
+
+
+## 2026-11-16 — Final checkpoint
+- Latest CI workflow commit: `243c7b8`; local revision guard now safely permits a clean `main` checkout to contain later commits than the trigger SHA.
+- Latest run `43892271305` (#9) remains queued without runner assignment at final check. Runner service is Running / Automatic; remote session is non-admin and cannot restart it.
+- Local security audit remains PASS (149/149 tests; full and production npm audits 0 vulnerabilities; Wrangler dry-run PASS). GitHub self-hosted execution remains PENDING until an Administrator PowerShell service restart and a completed run.

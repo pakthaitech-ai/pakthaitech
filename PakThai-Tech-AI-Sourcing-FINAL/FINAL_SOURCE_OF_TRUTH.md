@@ -783,3 +783,9 @@ The Owner Buyer Discovery and market prospect tables now display an explainable 
 - Local source/dependency audit is PASS: Wrangler 4.163.0; clean `npm ci`; 149/149 tests; production and complete npm audits 0 vulnerabilities; Wrangler dry-run PASS.
 - GitHub-side execution on `DESKTOP-MRO7VUR` remains pending; latest run `43891088323` was queued. Do not report the self-hosted CI integration as complete until a full successful GitHub Actions run is confirmed.
 - Runner Windows service remains Running / Automatic. The remote session is non-admin; an Administrator PowerShell service restart is required to refresh the runner if the queued job remains unassigned.
+
+
+## 2026-11-16 — Final CI checkpoint
+- Latest daily audit workflow commit: `243c7b8`; it uses the local `D:\pakthai` checkout, system Node/npm, a clean-main and ancestry guard, and strict dependency audit exit codes.
+- Latest GitHub run `43892271305` (#9) was queued without runner assignment at final check. Runner service is Running / Automatic, but a non-admin remote session cannot restart the service.
+- Local audit results remain PASS: 149/149 tests; production and full npm audits 0 vulnerabilities; Wrangler dry-run PASS. Do not mark GitHub self-hosted execution as verified until run #9 or a subsequent run completes successfully.
