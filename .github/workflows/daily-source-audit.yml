@@ -36,8 +36,30 @@ jobs:
         with:
           persist-credentials: false
           sparse-checkout: |
-            /*
-            !/PakThai-Tech-AI-Sourcing-FINAL/_MASTER_CONTROL/snapshot/
+            /.github/workflows/
+            /PakThai-Tech-AI-Sourcing-FINAL/package.json
+            /PakThai-Tech-AI-Sourcing-FINAL/package-lock.json
+            /PakThai-Tech-AI-Sourcing-FINAL/wrangler.jsonc
+            /PakThai-Tech-AI-Sourcing-FINAL/.validate-inline.mjs
+            /PakThai-Tech-AI-Sourcing-FINAL/src/
+            /PakThai-Tech-AI-Sourcing-FINAL/tools/
+            /PakThai-Tech-AI-Sourcing-FINAL/auth-session.test.mjs
+            /PakThai-Tech-AI-Sourcing-FINAL/external-discovery-conversion.test.mjs
+            /PakThai-Tech-AI-Sourcing-FINAL/seller-discovery.test.mjs
+            /PakThai-Tech-AI-Sourcing-FINAL/korea-seller-discovery.test.mjs
+            /PakThai-Tech-AI-Sourcing-FINAL/market-discovery.test.mjs
+            /PakThai-Store-DEPLOY/index.html
+            /PakThai-Store-DEPLOY/app.js
+            /PakThai-Store-DEPLOY/_headers
+            /PakThai-Store-DEPLOY/sw.js
+            /PakThai-Store-DEPLOY/robots.txt
+            /PakThai-Store-DEPLOY/functions/catalog.js
+            /PakThai-Store-DEPLOY/functions/products/
+            /PakThai-Store-DEPLOY/functions/sitemap.xml.js
+            /PakThai-Store-DEPLOY/manifest.webmanifest
+            /PakThai-Store-DEPLOY/icon.svg
+            /PakThai-Store-DEPLOY/icons/
+            /PakThai-Store-DEPLOY/assets/pakthai-tech-brand-cover.png
           sparse-checkout-cone-mode: false
 
       - name: Set up Node.js 24
