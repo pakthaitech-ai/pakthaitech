@@ -1,0 +1,107 @@
+name: PakThai Daily Source Audit
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 07:00 Pakistan Standard Time (UTC+5)
+    - cron: "0 2 * * *"
+  push:
+    branches: [main]
+    paths:
+      - "PakThai-Tech-AI-Sourcing-FINAL/src/**"
+      - "PakThai-Tech-AI-Sourcing-FINAL/tools/**"
+      - "PakThai-Tech-AI-Sourcing-FINAL/package.json"
+      - "PakThai-Tech-AI-Sourcing-FINAL/package-lock.json"
+      - ".github/workflows/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pakthai-source-audit
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: Tests and dependency security audit
+    runs-on: [self-hosted, Windows, X64]
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: .
+        shell: powershell
+    steps:
+      - name: Clone source into isolated runner workspace
+        working-directory: .
+        timeout-minutes: 10
+        run: |
+          $git = 'C:\Program Files\Git\cmd\git.exe'
+          $source = 'C:\actions-runner\_work\pakthaitech\pakthaitech\source'
+          Write-Output "Cloning repository into $source"
+          if (Test-Path $source) { Remove-Item -LiteralPath $source -Recurse -Force }
+          New-Item -ItemType Directory -Force -Path $source | Out-Null
+          & $git -c http.sslBackend=openssl -c core.longpaths=true clone --filter=blob:none --no-checkout --depth 1 --single-branch --branch main https://github.com/pakthaitech-ai/pakthaitech.git $source
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Configure sparse checkout
+        working-directory: .
+        run: |
+          $git = 'C:\Program Files\Git\cmd\git.exe'
+          $source = 'C:\actions-runner\_work\pakthaitech\pakthaitech\source'
+          $patterns = @(
+            '/.github/workflows/',
+            '/PakThai-Tech-AI-Sourcing-FINAL/',
+            '!/PakThai-Tech-AI-Sourcing-FINAL/_MASTER_CONTROL/snapshot/',
+            '/PakThai-Store-DEPLOY/'
+          )
+          & $git -c core.longpaths=true -C $source sparse-checkout set --no-cone $patterns
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Checkout source files
+        working-directory: .
+        run: |
+          $git = 'C:\Program Files\Git\cmd\git.exe'
+          $source = 'C:\actions-runner\_work\pakthaitech\pakthaitech\source'
+          & $git -c core.longpaths=true -C $source checkout --detach HEAD
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & $git -c safe.directory=* -C $source rev-parse HEAD
+
+      - name: Confirm Node.js and npm
+        working-directory: source/PakThai-Tech-AI-Sourcing-FINAL
+        run: |
+          & 'C:\Program Files\nodejs\node.exe' --version
+          & 'C:\Program Files\nodejs\npm.cmd' --version
+
+      - name: Install locked dependencies
+        id: install
+        working-directory: source/PakThai-Tech-AI-Sourcing-FINAL
+        run: |
+          & 'C:\Program Files\nodejs\npm.cmd' ci --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Run project test suite
+        working-directory: source/PakThai-Tech-AI-Sourcing-FINAL
+        run: |
+          & 'C:\Program Files\nodejs\npm.cmd' test
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Run production dependency audit
+        if: always() && steps.install.outcome == 'success'
+        working-directory: source/PakThai-Tech-AI-Sourcing-FINAL
+        run: |
+          & 'C:\Program Files\nodejs\npm.cmd' audit --omit=dev --audit-level=moderate
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Run complete dependency audit
+        if: always() && steps.install.outcome == 'success'
+        working-directory: source/PakThai-Tech-AI-Sourcing-FINAL
+        run: |
+          $env:PATH = 'C:\Program Files\nodejs;' + $env:PATH
+          $report = Join-Path $env:RUNNER_TEMP "pakthai-npm-audit-full-$env:GITHUB_RUN_NUMBER.json"
+          cmd.exe /c "npm audit --json > `"$report`""
+          $auditExit = $LASTEXITCODE
+          & 'C:\Program Files\nodejs\node.exe' -e "const p=JSON.parse(require('node:fs').readFileSync(process.argv[1],'utf8')); console.log(JSON.stringify(p.metadata?.vulnerabilities ?? {},null,2));" "$report"
+          $nodeExit = $LASTEXITCODE
+          if ($nodeExit -ne 0) { exit $nodeExit }
+          Write-Output "Full audit JSON saved to $report"
+          if ($auditExit -ne 0) { exit $auditExit }

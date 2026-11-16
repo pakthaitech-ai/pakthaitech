@@ -31,15 +31,30 @@ jobs:
         working-directory: .
         shell: powershell
     steps:
-      - name: Clone source into isolated runner workspace
+      - name: Runner shell smoke test
+        working-directory: .
+        run: |
+          Write-Output "Runner identity: $([Security.Principal.WindowsIdentity]::GetCurrent().Name)"
+          Write-Output "Current directory: $((Get-Location).Path)"
+          Write-Output "Workspace exists: $(Test-Path 'C:\actions-runner\_work\pakthaitech\pakthaitech')"
+          Start-Sleep -Seconds 5
+
+      - name: Prepare isolated source directory
+        working-directory: .
+        run: |
+          $source = 'C:\actions-runner\_work\pakthaitech\pakthaitech\source'
+          Write-Output "Preparing $source"
+          if (Test-Path $source) { Remove-Item -LiteralPath $source -Recurse -Force }
+          New-Item -ItemType Directory -Force -Path $source | Out-Null
+          Write-Output "Source directory exists: $(Test-Path $source)"
+
+      - name: Clone source repository
         working-directory: .
         timeout-minutes: 10
         run: |
           $git = 'C:\Program Files\Git\cmd\git.exe'
           $source = 'C:\actions-runner\_work\pakthaitech\pakthaitech\source'
-          Write-Output "Cloning repository into $source"
-          if (Test-Path $source) { Remove-Item -LiteralPath $source -Recurse -Force }
-          New-Item -ItemType Directory -Force -Path $source | Out-Null
+          $env:GIT_TERMINAL_PROMPT = '0'
           & $git -c http.sslBackend=openssl -c core.longpaths=true clone --filter=blob:none --no-checkout --depth 1 --single-branch --branch main https://github.com/pakthaitech-ai/pakthaitech.git $source
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
