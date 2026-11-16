@@ -28,63 +28,63 @@ jobs:
     timeout-minutes: 30
     defaults:
       run:
-        working-directory: D:/pakthai/PakThai-Tech-AI-Sourcing-FINAL
+        working-directory: .
         shell: powershell
     steps:
-      - name: Verify local main checkout matches or contains GitHub revision
-        working-directory: D:/pakthai
+      - name: Clone source into isolated runner workspace
+        timeout-minutes: 10
         run: |
           $git = 'C:\Program Files\Git\cmd\git.exe'
-          $repo = 'D:\pakthai'
+          $workspace = $env:GITHUB_WORKSPACE
+          $env:GIT_TERMINAL_PROMPT = '0'
           Write-Output "Runner identity: $([Security.Principal.WindowsIdentity]::GetCurrent().Name)"
-          Write-Output "Repository path exists: $(Test-Path $repo)"
-          Write-Output "Git executable exists: $(Test-Path $git)"
-          $dirty = & $git -c 'safe.directory=*' -C $repo status --porcelain
-          $gitExit = $LASTEXITCODE
-          Write-Output "Git status exit: $gitExit; dirty output length: $($dirty.Length)"
-          if ($gitExit -ne 0) { throw "Git status failed with exit code $gitExit." }
-          if ($dirty) { throw 'Local checkout is not clean; refusing to audit modified source.' }
-          $branch = & $git -c 'safe.directory=*' -C $repo branch --show-current
-          $gitExit = $LASTEXITCODE
-          Write-Output "Git branch exit: $gitExit; branch: $branch"
-          if ($gitExit -ne 0) { throw "Git branch check failed with exit code $gitExit." }
-          if ($branch -ne 'main') { throw "Expected main branch; found $branch." }
-          $head = & $git -c 'safe.directory=*' -C $repo rev-parse HEAD
-          $gitExit = $LASTEXITCODE
-          Write-Output "Git HEAD exit: $gitExit; local HEAD: $head; trigger SHA: $env:GITHUB_SHA"
-          if ($gitExit -ne 0) { throw "Git HEAD check failed with exit code $gitExit." }
-          if ($head -ne $env:GITHUB_SHA) {
-            & $git -c 'safe.directory=*' -C $repo merge-base --is-ancestor $env:GITHUB_SHA $head
-            $ancestorExit = $LASTEXITCODE
-            Write-Output "Trigger SHA ancestry exit: $ancestorExit"
-            if ($ancestorExit -ne 0) { throw 'Local main does not contain the workflow trigger revision.' }
-          }
-          Write-Output "Auditing local main revision $head; working tree clean."
+          Write-Output "Workspace: $workspace"
+          if (-not (Test-Path $workspace)) { New-Item -ItemType Directory -Force -Path $workspace | Out-Null }
+          Get-ChildItem $workspace -Force | Remove-Item -Recurse -Force
+          & $git -c http.sslBackend=openssl -c core.longpaths=true clone --filter=blob:none --no-checkout --depth 1 --single-branch --branch main https://github.com/pakthaitech-ai/pakthaitech.git $workspace
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $patterns = @(
+            '/.github/workflows/',
+            '/PakThai-Tech-AI-Sourcing-FINAL/',
+            '!/PakThai-Tech-AI-Sourcing-FINAL/_MASTER_CONTROL/snapshot/',
+            '/PakThai-Store-DEPLOY/'
+          )
+          $patterns | & $git -c http.sslBackend=openssl -c core.longpaths=true -C $workspace sparse-checkout set --no-cone --stdin
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & $git -c http.sslBackend=openssl -c core.longpaths=true -C $workspace checkout --detach HEAD
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $head = & $git -c safe.directory=* -C $workspace rev-parse HEAD
+          Write-Output "Checked out main at $head; workflow trigger was $env:GITHUB_SHA"
 
       - name: Confirm Node.js and npm
+        working-directory: PakThai-Tech-AI-Sourcing-FINAL
         run: |
           & 'C:\Program Files\nodejs\node.exe' --version
           & 'C:\Program Files\nodejs\npm.cmd' --version
 
       - name: Install locked dependencies
         id: install
+        working-directory: PakThai-Tech-AI-Sourcing-FINAL
         run: |
           & 'C:\Program Files\nodejs\npm.cmd' ci --no-audit --no-fund
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Run project test suite
+        working-directory: PakThai-Tech-AI-Sourcing-FINAL
         run: |
           & 'C:\Program Files\nodejs\npm.cmd' test
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Run production dependency audit
         if: always() && steps.install.outcome == 'success'
+        working-directory: PakThai-Tech-AI-Sourcing-FINAL
         run: |
           & 'C:\Program Files\nodejs\npm.cmd' audit --omit=dev --audit-level=moderate
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Run complete dependency audit
         if: always() && steps.install.outcome == 'success'
+        working-directory: PakThai-Tech-AI-Sourcing-FINAL
         run: |
           $env:PATH = 'C:\Program Files\nodejs;' + $env:PATH
           $report = Join-Path $env:RUNNER_TEMP "pakthai-npm-audit-full-$env:GITHUB_RUN_NUMBER.json"

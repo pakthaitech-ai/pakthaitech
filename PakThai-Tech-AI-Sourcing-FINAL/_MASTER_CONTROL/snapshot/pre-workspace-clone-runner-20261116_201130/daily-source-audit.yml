@@ -1,0 +1,97 @@
+name: PakThai Daily Source Audit
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 07:00 Pakistan Standard Time (UTC+5)
+    - cron: "0 2 * * *"
+  push:
+    branches: [main]
+    paths:
+      - "PakThai-Tech-AI-Sourcing-FINAL/src/**"
+      - "PakThai-Tech-AI-Sourcing-FINAL/tools/**"
+      - "PakThai-Tech-AI-Sourcing-FINAL/package.json"
+      - "PakThai-Tech-AI-Sourcing-FINAL/package-lock.json"
+      - ".github/workflows/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pakthai-source-audit
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: Tests and dependency security audit
+    runs-on: [self-hosted, Windows, X64]
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: D:/pakthai/PakThai-Tech-AI-Sourcing-FINAL
+        shell: powershell
+    steps:
+      - name: Verify local main checkout matches or contains GitHub revision
+        working-directory: D:/pakthai
+        run: |
+          $git = 'C:\Program Files\Git\cmd\git.exe'
+          $repo = 'D:\pakthai'
+          Write-Output "Runner identity: $([Security.Principal.WindowsIdentity]::GetCurrent().Name)"
+          Write-Output "Repository path exists: $(Test-Path $repo)"
+          Write-Output "Git executable exists: $(Test-Path $git)"
+          $dirty = & $git -c 'safe.directory=*' -C $repo status --porcelain
+          $gitExit = $LASTEXITCODE
+          Write-Output "Git status exit: $gitExit; dirty output length: $($dirty.Length)"
+          if ($gitExit -ne 0) { throw "Git status failed with exit code $gitExit." }
+          if ($dirty) { throw 'Local checkout is not clean; refusing to audit modified source.' }
+          $branch = & $git -c 'safe.directory=*' -C $repo branch --show-current
+          $gitExit = $LASTEXITCODE
+          Write-Output "Git branch exit: $gitExit; branch: $branch"
+          if ($gitExit -ne 0) { throw "Git branch check failed with exit code $gitExit." }
+          if ($branch -ne 'main') { throw "Expected main branch; found $branch." }
+          $head = & $git -c 'safe.directory=*' -C $repo rev-parse HEAD
+          $gitExit = $LASTEXITCODE
+          Write-Output "Git HEAD exit: $gitExit; local HEAD: $head; trigger SHA: $env:GITHUB_SHA"
+          if ($gitExit -ne 0) { throw "Git HEAD check failed with exit code $gitExit." }
+          if ($head -ne $env:GITHUB_SHA) {
+            & $git -c 'safe.directory=*' -C $repo merge-base --is-ancestor $env:GITHUB_SHA $head
+            $ancestorExit = $LASTEXITCODE
+            Write-Output "Trigger SHA ancestry exit: $ancestorExit"
+            if ($ancestorExit -ne 0) { throw 'Local main does not contain the workflow trigger revision.' }
+          }
+          Write-Output "Auditing local main revision $head; working tree clean."
+
+      - name: Confirm Node.js and npm
+        run: |
+          & 'C:\Program Files\nodejs\node.exe' --version
+          & 'C:\Program Files\nodejs\npm.cmd' --version
+
+      - name: Install locked dependencies
+        id: install
+        run: |
+          & 'C:\Program Files\nodejs\npm.cmd' ci --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Run project test suite
+        run: |
+          & 'C:\Program Files\nodejs\npm.cmd' test
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Run production dependency audit
+        if: always() && steps.install.outcome == 'success'
+        run: |
+          & 'C:\Program Files\nodejs\npm.cmd' audit --omit=dev --audit-level=moderate
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Run complete dependency audit
+        if: always() && steps.install.outcome == 'success'
+        run: |
+          $env:PATH = 'C:\Program Files\nodejs;' + $env:PATH
+          $report = Join-Path $env:RUNNER_TEMP "pakthai-npm-audit-full-$env:GITHUB_RUN_NUMBER.json"
+          cmd.exe /c "npm audit --json > `"$report`""
+          $auditExit = $LASTEXITCODE
+          & 'C:\Program Files\nodejs\node.exe' -e "const p=JSON.parse(require('node:fs').readFileSync(process.argv[1],'utf8')); console.log(JSON.stringify(p.metadata?.vulnerabilities ?? {},null,2));" "$report"
+          $nodeExit = $LASTEXITCODE
+          if ($nodeExit -ne 0) { exit $nodeExit }
+          Write-Output "Full audit JSON saved to $report"
+          if ($auditExit -ne 0) { exit $auditExit }
