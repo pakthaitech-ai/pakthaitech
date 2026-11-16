@@ -4,25 +4,65 @@ on:
   schedule:
     - cron: '*/30 * * * *'
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/run-engine.yml'
+      - 'PakThai-Tech-AI-Sourcing-FINAL/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pakthai-engine-runner
+  cancel-in-progress: false
 
 jobs:
   run-engine:
-    runs-on: ubuntu-latest
+    name: Test and monitor PakThai engine
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: PakThai-Tech-AI-Sourcing-FINAL
+
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v6
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Node.js 24
+        uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '24'
+          package-manager-cache: false
 
-      - name: Run AI Sourcing Engine Worker
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Run full automated test suite
+        run: npm test
+
+      - name: Check live PakThai services (read-only)
+        shell: bash
         run: |
-          echo "Starting PakThai Tech AI Sourcing Engine..."
-          if [ -f "src/worker.js" ]; then
-            node src/worker.js
-          else
-            echo "Worker file not found in src/, checking root..."
-            node worker.js || echo "Engine script execution complete."
-          fi
+          node --input-type=module <<'NODE'
+          const checks = [
+            ['AI Worker health', 'https://pakthai-ai-sourcing.pakthaitech.workers.dev/api/health'],
+            ['AI Worker public catalog', 'https://pakthai-ai-sourcing.pakthaitech.workers.dev/api/catalog'],
+            ['PakThai Store', 'https://pakthai-tech-store.pages.dev/']
+          ];
+
+          let failed = false;
+          for (const [label, url] of checks) {
+            try {
+              const response = await fetch(url, { signal: AbortSignal.timeout(20000) });
+              console.log(`${response.status} ${label} - ${url}`);
+              if (!response.ok) failed = true;
+            } catch (error) {
+              failed = true;
+              console.error(`FAILED ${label}: ${error.message}`);
+            }
+          }
+          if (failed) process.exit(1);
+          NODE
