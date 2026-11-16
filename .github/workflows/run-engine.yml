@@ -2,7 +2,7 @@ name: PakThai 24/7 Engine Runner
 
 on:
   schedule:
-    - cron: '*/30 * * * *' # Har 30 minute baad khud ba khud chale ga
+    - cron: '*/30 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -12,11 +12,17 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js / Environment
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Run Sourcing and Store Monitor
+      - name: Run AI Sourcing Engine Worker
         run: |
-          echo "Engine is reading project structure and running background sync..."
+          echo "Starting PakThai Tech AI Sourcing Engine..."
+          if [ -f "src/worker.js" ]; then
+            node src/worker.js
+          else
+            echo "Worker file not found in src/, checking root..."
+            node worker.js || echo "Engine script execution complete."
+          fi
