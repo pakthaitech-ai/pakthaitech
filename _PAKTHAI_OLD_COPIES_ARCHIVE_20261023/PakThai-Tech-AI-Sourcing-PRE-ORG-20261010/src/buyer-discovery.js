@@ -1,0 +1,111 @@
+// PAKTHAI TECH — Google Places buyer-prospect discovery adapter.
+// Stores Google Place IDs only; business details are fetched live to respect Places content policies.
+// No messages are sent and no buyer is marked confirmed by this module.
+
+const json = (data, status = 200) => new Response(JSON.stringify(data), {
+  status, headers: { "content-type": "application/json; charset=utf-8", "Access-Control-Allow-Origin": "*" }
+});
+
+const SEARCH_URL = "https://places.googleapis.com/v1/places:searchText";
+const FIELDS = "places.id,places.displayName,places.formattedAddress,places.types,nextPageToken";
+
+async function ensureProspectSchema(db) {
+  await db.prepare(`CREATE TABLE IF NOT EXISTS buyer_prospects (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    place_id TEXT NOT NULL UNIQUE,
+    discovery_query TEXT NOT NULL,
+    discovery_city TEXT NOT NULL,
+    review_status TEXT NOT NULL DEFAULT 'unreviewed',
+    first_seen_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_seen_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    owner_notes TEXT
+  )`).run();
+}
+
+async function searchPlaces(apiKey, query, pageToken) {
+  const body = { textQuery: query, pageSize: 10, languageCode: "en", regionCode: "PK" };
+  if (pageToken) body.pageToken = pageToken;
+  const response = await fetch(SEARCH_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Goog-Api-Key": apiKey,
+      "X-Goog-FieldMask": FIELDS
+    },
+    body: JSON.stringify(body)
+  });
+  const raw = await response.text();
+  let data;
+  try { data = JSON.parse(raw); } catch { data = { error: { message: raw.slice(0, 300) } }; }
+  if (!response.ok) {
+    const error = new Error(data?.error?.message || "Google Places request failed");
+    error.status = response.status;
+    throw error;
+  }
+  return data;
+}
+
+export async function handleBuyerDiscoveryRequest(request, env) {
+  const url = new URL(request.url);
+  if (!url.pathname.startsWith("/api/buyer-prospects")) return null;
+  if (request.method === "OPTIONS") return new Response(null, { headers: { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "GET,POST,OPTIONS", "Access-Control-Allow-Headers": "Content-Type,Authorization" } });
+
+  // Every discovery/read/write route is owner-token protected to prevent public API abuse and billable requests.
+  const expected = String(env.BUYER_DISCOVERY_ADMIN_TOKEN || "");
+  const supplied = String(request.headers.get("authorization") || "").replace(/^Bearer\s+/i, "").trim();
+  if (!expected || !supplied || supplied !== expected) return json({ ok:false, error:"Owner authorization required. Configure BUYER_DISCOVERY_ADMIN_TOKEN." }, 401);
+
+  await ensureProspectSchema(env.DB);
+  const apiKey = String(env.GOOGLE_PLACES_API_KEY || "").trim();
+
+  if (url.pathname === "/api/buyer-prospects" && request.method === "GET") {
+    const rows = await env.DB.prepare("SELECT id,place_id,discovery_query,discovery_city,review_status,first_seen_at,last_seen_at,owner_notes FROM buyer_prospects ORDER BY last_seen_at DESC LIMIT 300").all();
+    return json({ ok:true, prospects:rows.results || [], note:"Google Places details are not copied into the database; only Place IDs and owner review metadata are stored." });
+  }
+
+  if (url.pathname === "/api/buyer-prospects/discover" && request.method === "POST") {
+    if (!apiKey) return json({ ok:false, error:"Google Places API key is not configured.", next_step:"Enable Places API (New), configure billing, and add GOOGLE_PLACES_API_KEY as a Worker secret." }, 503);
+    let body = {};
+    try { body = await request.json(); } catch {}
+    const cities = Array.isArray(body.cities) ? body.cities : ["Faisalabad", "Lahore", "Karachi"];
+    const searches = Array.isArray(body.searches) ? body.searches : ["computer parts wholesaler", "computer hardware retailer"];
+    const safeCities = [...new Set(cities.map(x => String(x).trim()).filter(Boolean))].slice(0, 5);
+    const safeSearches = [...new Set(searches.map(x => String(x).trim()).filter(Boolean))].slice(0, 2);
+    if (!safeCities.length || !safeSearches.length) return json({ ok:false, error:"Provide at least one city and search phrase." }, 400);
+    let queriesRun = 0, placesSeen = 0, placeIdsSavedOrRefreshed = 0;
+    const errors = [];
+    for (const city of safeCities) {
+      for (const phrase of safeSearches) {
+        if (queriesRun >= 10) break;
+        const query = phrase + " in " + city + ", Pakistan";
+        try {
+          const data = await searchPlaces(apiKey, query);
+          queriesRun++;
+          for (const place of (data.places || [])) {
+            if (!place.id) continue;
+            placesSeen++;
+            const result = await env.DB.prepare(`INSERT INTO buyer_prospects(place_id,discovery_query,discovery_city,review_status,first_seen_at,last_seen_at)
+              VALUES(?,?,?,'unreviewed',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)
+              ON CONFLICT(place_id) DO UPDATE SET discovery_query=excluded.discovery_query, discovery_city=excluded.discovery_city, last_seen_at=CURRENT_TIMESTAMP`).bind(place.id, query, city).run();
+            if (Number(result.meta?.changes || 0) > 0) placeIdsSavedOrRefreshed++;
+          }
+        } catch (e) {
+          errors.push({ city, phrase, status:e.status || null, error:String(e.message || e).slice(0,250) });
+        }
+      }
+    }
+    return json({ ok:errors.length === 0, queries_run:queriesRun, results_seen:placesSeen, place_ids_saved_or_refreshed:placeIdsSavedOrRefreshed, errors, next_step:"Review prospects, then verify their buying interest before creating a buyer or requirement. This does not send outreach." }, errors.length && !queriesRun ? 502 : 200);
+  }
+
+  if (url.pathname === "/api/buyer-prospects/review" && request.method === "POST") {
+    let body = {};
+    try { body = await request.json(); } catch {}
+    const id = Number(body.id) || 0;
+    const status = String(body.review_status || "");
+    if (!id || !["unreviewed","contact_to_verify","qualified","not_a_fit"].includes(status)) return json({ ok:false, error:"Valid id and review_status required." },400);
+    await env.DB.prepare("UPDATE buyer_prospects SET review_status=?,owner_notes=? WHERE id=?").bind(status, String(body.owner_notes || "").slice(0,1000), id).run();
+    return json({ ok:true, id, review_status:status });
+  }
+
+  return json({ ok:false, error:"Route or method not found." },404);
+}

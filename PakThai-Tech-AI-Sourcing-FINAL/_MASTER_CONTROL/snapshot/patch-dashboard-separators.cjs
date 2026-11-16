@@ -1,0 +1,1 @@
+const fs=require('node:fs');const p='D:/pakthai/PakThai-Tech-AI-SOURCING-FINAL/src/worker.js';let s=fs.readFileSync(p,'utf8');s=s.replace(/Ã‚Â·/g,' - ').replace(/Ã¢â‚¬â€/g,' - ');fs.writeFileSync(p,s,'utf8');console.log('Replaced remaining mojibake separators with ASCII hyphens.');

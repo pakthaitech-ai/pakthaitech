@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json.schemastore.org/wrangler.json",
+  "name": "pakthai-ai-sourcing",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-09-25",
+  "vars": {
+    "WHATSAPP_WEBHOOK_VERIFY_TOKEN": "PakThaiWAStatus_9V7nK4rX2pL8qM6w"
+  },
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true,
+      "head_sampling_rate": 1
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 0.1
+    },
+    "issues": {
+      "enabled": true
+    }
+  },
+  "triggers": {
+    "crons": [
+      "0 2 * * *",
+      "0 4 * * *",
+      "0 * * * *"
+    ]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "pakthai-sourcing-db",
+      "database_id": "a2d77cc7-c50e-40c5-91da-a129865fffa1"
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+﻿// Gmail OAuth + approved notification sending.
+// Configure GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET as Worker secrets.
+function b64url(bytes) {
+  let s = "";
+  for (const b of bytes) s += String.fromCharCode(b);
+  return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+function mimeB64(text) {
+  const bytes = new TextEncoder().encode(text);
+  return b64url(bytes);
+}
+function makeMime(to, subject, body) {
+  const safe = (s) => String(s || "").replace(/[\r\n]+/g, " ").trim();
+  const raw = [
+    "From: pakthaitech@gmail.com",
+    "To: " + safe(to),
+    "Subject: " + safe(subject),
+    "MIME-Version: 1.0",
+    "Content-Type: text/plain; charset=UTF-8",
+    "",
+    String(body || "")
+  ].join("\r\n");
+  return mimeB64(raw);
+}
+
+async function ensureTables(db) {
+  await db.prepare("CREATE TABLE IF NOT EXISTS gmail_oauth (id INTEGER PRIMARY KEY CHECK(id=1), refresh_token TEXT, updated_at TEXT)").run();
+  await db.prepare("CREATE TABLE IF NOT EXISTS gmail_oauth_state (state TEXT PRIMARY KEY, expires_at INTEGER)").run();
+}
+
+export async function handleGmailOAuth(request, env) {
+  const url = new URL(request.url);
+  const path = url.pathname;
+  if (!["/auth/google/start", "/auth/google/callback", "/api/gmail/status", "/api/notifications/gmail-send"].includes(path)) return null;
+  if (!env.DB) return new Response("Database binding missing", {status:500});
+  await ensureTables(env.DB);
+
+  if (path === "/api/gmail/status" && request.method === "GET") {
+    const row = await env.DB.prepare("SELECT updated_at FROM gmail_oauth WHERE id=1").first();
+    return new Response(JSON.stringify({
+      ok:true,
+      client_id_configured:Boolean(env.GOOGLE_CLIENT_ID),
+      client_secret_configured:Boolean(env.GOOGLE_CLIENT_SECRET),
+      authorized:Boolean(row),
+      authorized_at:row?.updated_at || null,
+      actual_sending_ready:Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET && row)
+    }), {headers:{"content-type":"application/json"}});
+  }
+
+  const redirectUri = url.origin + "/auth/google/callback";
+
+  if (path === "/auth/google/start" && request.method === "GET") {
+    if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET) {
+      return new Response("Gmail OAuth is not configured yet. Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET Worker secrets first.", {status:503});
+    }
+    const bytes = new Uint8Array(32);
+    crypto.getRandomValues(bytes);
+    const state = b64url(bytes);
+    await env.DB.prepare("INSERT INTO gmail_oauth_state(state,expires_at) VALUES(?,?)").bind(state,Date.now()+600000).run();
+    const q = new URLSearchParams({
+      client_id:env.GOOGLE_CLIENT_ID,
+      redirect_uri:redirectUri,
+      response_type:"code",
+      scope:"https://www.googleapis.com/auth/gmail.send",
+      access_type:"offline",
+      prompt:"consent",
+      state
+    });
+    return Response.redirect("https://accounts.google.com/o/oauth2/v2/auth?"+q.toString(),302);
+  }
+
+  if (path === "/auth/google/callback" && request.method === "GET") {
+    const state=url.searchParams.get("state");
+    const code=url.searchParams.get("code");
+    if (!state || !code || !env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET) {
+      return new Response("OAuth parameters or Worker secrets missing",{status:400});
+    }
+    const saved=await env.DB.prepare("SELECT state FROM gmail_oauth_state WHERE state=? AND expires_at>?").bind(state,Date.now()).first();
+    if (!saved) return new Response("Invalid or expired OAuth state. Start again.",{status:400});
+    await env.DB.prepare("DELETE FROM gmail_oauth_state WHERE state=?").bind(state).run();
+    const tokenResp=await fetch("https://oauth2.googleapis.com/token",{
+      method:"POST",
+      headers:{"content-type":"application/x-www-form-urlencoded"},
+      body:new URLSearchParams({
+        code,client_id:env.GOOGLE_CLIENT_ID,client_secret:env.GOOGLE_CLIENT_SECRET,
+        redirect_uri:redirectUri,grant_type:"authorization_code"
+      })
+    });
+    const tokens=await tokenResp.json();
+    if (!tokenResp.ok) return new Response("Google token exchange failed: " + String(tokens.error || "unknown") + (tokens.error_description ? " â€” " + String(tokens.error_description) : ""),{status:502,headers:{"content-type":"text/plain; charset=utf-8"}});
+    if (!tokens.refresh_token) return new Response("Google did not return a refresh token. Revoke app access and retry consent.",{status:502});
+    await env.DB.prepare("INSERT INTO gmail_oauth(id,refresh_token,updated_at) VALUES(1,?,?) ON CONFLICT(id) DO UPDATE SET refresh_token=excluded.refresh_token,updated_at=excluded.updated_at").bind(tokens.refresh_token,new Date().toISOString()).run();
+    return new Response("Gmail authorization connected. You can close this tab.",{headers:{"content-type":"text/plain; charset=utf-8"}});
+  }
+
+  if (path === "/api/notifications/gmail-send") {
+    const expected = String(env.EMAIL_SEND_TOKEN || "").trim();
+    const supplied = String(request.headers.get("authorization") || "").replace(/^Bearer\s+/i, "").trim();
+    if (!expected || !supplied || supplied !== expected) {
+      return new Response(JSON.stringify({error:"Owner authorization required"}), {status:401,headers:{"content-type":"application/json"}});
+    }
+  }
+
+  if (path === "/api/notifications/gmail-send" && request.method === "POST") {
+    if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET) return new Response(JSON.stringify({error:"Gmail Worker secrets are not configured"}),{status:503,headers:{"content-type":"application/json"}});
+    let body={};
+    try { body=await request.json(); } catch {}
+    const id=Math.floor(Number(body.notification_id)||0);
+    if (!id) return new Response(JSON.stringify({error:"notification_id is required"}),{status:400,headers:{"content-type":"application/json"}});
+    const n=await env.DB.prepare("SELECT * FROM notifications WHERE id=? LIMIT 1").bind(id).first();
+    if (!n) return new Response(JSON.stringify({error:"Notification not found"}),{status:404,headers:{"content-type":"application/json"}});
+    if (String(n.channel)!=="email" || String(n.status)!=="approved") {
+      return new Response(JSON.stringify({error:"Owner approval required: notification must be email + approved before sending."}),{status:409,headers:{"content-type":"application/json"}});
+    }
+    const auth=await env.DB.prepare("SELECT refresh_token FROM gmail_oauth WHERE id=1").first();
+    if (!auth?.refresh_token) return new Response(JSON.stringify({error:"Gmail account is not authorized yet."}),{status:409,headers:{"content-type":"application/json"}});
+    const tokenResp=await fetch("https://oauth2.googleapis.com/token",{
+      method:"POST",
+      headers:{"content-type":"application/x-www-form-urlencoded"},
+      body:new URLSearchParams({client_id:env.GOOGLE_CLIENT_ID,client_secret:env.GOOGLE_CLIENT_SECRET,refresh_token:auth.refresh_token,grant_type:"refresh_token"})
+    });
+    const token=await tokenResp.json();
+    if (!tokenResp.ok || !token.access_token) return new Response(JSON.stringify({error:"Gmail access-token refresh failed."}),{status:502,headers:{"content-type":"application/json"}});
+    const raw=makeMime(n.recipient,n.subject,n.message);
+    const sendResp=await fetch("https://gmail.googleapis.com/gmail/v1/users/me/messages/send",{
+      method:"POST",
+      headers:{Authorization:"Bearer "+token.access_token,"content-type":"application/json"},
+      body:JSON.stringify({raw})
+    });
+    const sent=await sendResp.json().catch(()=>({}));
+    if (!sendResp.ok) return new Response(JSON.stringify({error:"Gmail send failed",details:sent}),{status:502,headers:{"content-type":"application/json"}});
+    await env.DB.prepare("UPDATE notifications SET status='sent',sent_at=CURRENT_TIMESTAMP WHERE id=?").bind(id).run();
+    return new Response(JSON.stringify({ok:true,sent:true,notification_id:id,message_id:sent.id||null}),{headers:{"content-type":"application/json"}});
+  }
+  return null;
+}
+

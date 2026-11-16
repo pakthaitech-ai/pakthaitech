@@ -1,0 +1,182 @@
+﻿
+> src\worker.before-final-deploy-20261001-190528.js:2804:async function runScheduledPhase2(env) {
+  src\worker.before-final-deploy-20261001-190528.js:2805:  await initDb(env.DB);
+  src\worker.before-final-deploy-20261001-190528.js:2806:  const settings = await getSettings(env.DB);
+  src\worker.before-final-deploy-20261001-190528.js:2807:
+  src\worker.before-final-deploy-20261001-190528.js:2808:  if (masterMode(settings) !== "on") {
+  src\worker.before-final-deploy-20261001-190528.js:2809:    return { ok: true, paused: true, reason: `Master AI is ${masterMode(settings)}.` };
+  src\worker.before-final-deploy-20261001-190528.js:2810:  }
+  src\worker.before-final-deploy-20261001-190528.js:2811:
+  src\worker.before-final-deploy-20261001-190528.js:2812:  // 1) Pakistan buyer requirements -> PakThai Tech products
+  src\worker.before-final-deploy-20261001-190528.js:2813:  const buyerMatchRequest = new Request("https://internal/api/buyer-match/run", {
+  src\worker.before-final-deploy-20261001-190528.js:2814:    method: "POST",
+  src\worker.before-final-deploy-20261001-190528.js:2815:    headers: { "content-type": "application/json" },
+  src\worker.before-final-deploy-20261001-190528.js:2816:    body: "{}"
+  src\worker.before-final-deploy-20261001-190528.js:2817:  });
+  src\worker.before-final-deploy-20261001-190528.js:2818:  const buyerMatchResponse = await handleMasterBuyerApi(buyerMatchRequest, env);
+  src\worker.before-final-deploy-20261001-190528.js:2819:  const buyerMatchResult = await buyerMatchResponse.json().catch(() => ({}));
+  src\worker.before-final-deploy-20261001-190528.js:2820:
+  src\worker.before-final-deploy-20261001-190528.js:2821:  // 2) Product -> eligible seller matching
+  src\worker.before-final-deploy-20261001-190528.js:2822:  const sellerMatchResult = await runProductSellerMatching(env.DB, {
+  src\worker.before-final-deploy-20261001-190528.js:2823:    only_unmatched: true,
+  src\worker.before-final-deploy-20261001-190528.js:2824:    apply: true,
+  src\worker.before-final-deploy-20261001-190528.js:2825:    limit: 100,
+  src\worker.before-final-deploy-20261001-190528.js:2826:    thb_to_pkr: settingNum(settings, "thb_to_pkr", 8.36),
+  src\worker.before-final-deploy-20261001-190528.js:2827:    target_margin_pct: settingNum(settings, "default_margin_pct", 20)
+  src\worker.before-final-deploy-20261001-190528.js:2828:  });
+  src\worker.before-final-deploy-20261001-190528.js:2829:
+  src\worker.before-final-deploy-20261001-190528.js:2830:  // 3) Seller-matched records -> sourcing opportunities.
+  src\worker.before-final-deploy-20261001-190528.js:2831:  //    Owner approval remains mandatory; this function never purchases anything.
+  src\worker.before-final-deploy-20261001-190528.js:2832:  const matchedRows = (await env.DB.prepare(`
+  src\worker.before-final-deploy-20261001-190528.js:2833:    SELECT bm.id
+  src\worker.before-final-deploy-20261001-190528.js:2834:    FROM buyer_matches bm
+  src\worker.before-final-deploy-20261001-190528.js:2835:    WHERE bm.seller_id IS NOT NULL
+  src\worker.before-final-deploy-20261001-190528.js:2836:      AND bm.match_status = 'seller_matched'
+  src\worker.before-final-deploy-20261001-190528.js:2837:      AND NOT EXISTS (
+  src\worker.before-final-deploy-20261001-190528.js:2838:        SELECT 1 FROM opportunities o
+  src\worker.before-final-deploy-20261001-190528.js:2839:        WHERE o.notes LIKE '%Block 9 buyer_match_id:' || bm.id || '%'
+  src\worker.before-final-deploy-20261001-190528.js:2840:      )
+  src\worker.before-final-deploy-20261001-190528.js:2841:    ORDER BY bm.id ASC
+  src\worker.before-final-deploy-20261001-190528.js:2842:    LIMIT 100
+  src\worker.before-final-deploy-20261001-190528.js:2843:  `).all()).results || [];
+  src\worker.before-final-deploy-20261001-190528.js:2844:
+  src\worker.before-final-deploy-20261001-190528.js:2845:  let opportunitiesCreated = 0;
+  src\worker.before-final-deploy-20261001-190528.js:2846:  const opportunityErrors = [];
+  src\worker.before-final-deploy-20261001-190528.js:2847:
+  src\worker.before-final-deploy-20261001-190528.js:2848:  for (const row of matchedRows) {
+  src\worker.before-final-deploy-20261001-190528.js:2849:    try {
+  src\worker.before-final-deploy-20261001-190528.js:2850:      const req = new Request("https://internal/api/opportunity-from-seller-match", {
+  src\worker.before-final-deploy-20261001-190528.js:2851:        method: "POST",
+  src\worker.before-final-deploy-20261001-190528.js:2852:        headers: { "content-type": "application/json" },
+  src\worker.before-final-deploy-20261001-190528.js:2853:        body: JSON.stringify({ buyer_match_id: row.id })
+  src\worker.before-final-deploy-20261001-190528.js:2854:      });
+  src\worker.before-final-deploy-20261001-190528.js:2855:      const resp = await handleBlock9Opportunity(req, env);
+  src\worker.before-final-deploy-20261001-190528.js:2856:      const result = await resp.json().catch(() => ({}));
+  src\worker.before-final-deploy-20261001-190528.js:2857:      if (result.created) opportunitiesCreated++;
+  src\worker.before-final-deploy-20261001-190528.js:2858:      if (result.error) {
+  src\worker.before-final-deploy-20261001-190528.js:2859:        opportunityErrors.push({
+  src\worker.before-final-deploy-20261001-190528.js:2860:          buyer_match_id: row.id,
+  src\worker.before-final-deploy-20261001-190528.js:2861:          error: result.error
+  src\worker.before-final-deploy-20261001-190528.js:2862:        });
+  src\worker.before-final-deploy-20261001-190528.js:2863:      }
+  src\worker.before-final-deploy-20261001-190528.js:2864:    } catch (e) {
+  src\worker.before-final-deploy-20261001-190528.js:2865:      opportunityErrors.push({
+  src\worker.before-final-deploy-20261001-190528.js:2866:        buyer_match_id: row.id,
+  src\worker.before-final-deploy-20261001-190528.js:2867:        error: e?.message || String(e)
+  src\worker.before-final-deploy-20261001-190528.js:2868:      });
+  src\worker.before-final-deploy-20261001-190528.js:2869:    }
+  src\worker.before-final-deploy-20261001-190528.js:2870:  }
+  src\worker.before-final-deploy-20261001-190528.js:2871:
+  src\worker.before-final-deploy-20261001-190528.js:2872:  // 4) Negotiation follow-ups remain prepared_only until a real provider is connected.
+  src\worker.before-final-deploy-20261001-190528.js:2873:  let followups = {
+  src\worker.before-final-deploy-20261001-190528.js:2874:    ok: true,
+  src\worker.before-final-deploy-20261001-190528.js:2875:    processed: 0,
+  src\worker.before-final-deploy-20261001-190528.js:2876:    actual_sending: "prepared_only"
+  src\worker.before-final-deploy-20261001-190528.js:2877:  };
+  src\worker.before-final-deploy-20261001-190528.js:2878:
+  src\worker.before-final-deploy-20261001-190528.js:2879:  try {
+  src\worker.before-final-deploy-20261001-190528.js:2880:    const req = new Request("https://internal/api/negotiations/followups", {
+  src\worker.before-final-deploy-20261001-190528.js:2881:      method: "POST",
+  src\worker.before-final-deploy-20261001-190528.js:2882:      headers: { "content-type": "application/json" },
+  src\worker.before-final-deploy-20261001-190528.js:2883:      body: "{}"
+  src\worker.before-final-deploy-20261001-190528.js:2884:    });
+  src\worker.before-final-deploy-20261001-190528.js:2885:    const resp = await handleFinalBlocks(req, env);
+  src\worker.before-final-deploy-20261001-190528.js:2886:    followups = await resp.json().catch(() => followups);
+  src\worker.before-final-deploy-20261001-190528.js:2887:  } catch (e) {
+  src\worker.before-final-deploy-20261001-190528.js:2888:    followups = {
+  src\worker.before-final-deploy-20261001-190528.js:2889:      ok: false,
+  src\worker.before-final-deploy-20261001-190528.js:2890:      processed: 0,
+  src\worker.before-final-deploy-20261001-190528.js:2891:      actual_sending: "prepared_only",
+  src\worker.before-final-deploy-20261001-190528.js:2892:      error: e?.message || String(e)
+  src\worker.before-final-deploy-20261001-190528.js:2893:    };
+  src\worker.before-final-deploy-20261001-190528.js:2894:  }
+  src\worker.before-final-deploy-20261001-190528.js:2895:
+  src\worker.before-final-deploy-20261001-190528.js:2896:  const now = new Date().toISOString();
+  src\worker.before-final-deploy-20261001-190528.js:2897:
+  src\worker.before-final-deploy-20261001-190528.js:2898:  await env.DB.prepare(`
+  src\worker.before-final-deploy-20261001-190528.js:2899:    INSERT INTO settings(key,value)
+  src\worker.before-final-deploy-20261001-190528.js:2900:    VALUES('phase2_last_run_at',?)
+  src\worker.before-final-deploy-20261001-190528.js:2901:    ON CONFLICT(key) DO UPDATE SET value=excluded.value
+  src\worker.before-final-deploy-20261001-190528.js:2902:  `).bind(now).run();
+  src\worker.before-final-deploy-20261001-190528.js:2903:
+  src\worker.before-final-deploy-20261001-190528.js:2904:  await env.DB.prepare(`
+  src\worker.before-final-deploy-20261001-190528.js:2905:    INSERT INTO settings(key,value)
+  src\worker.before-final-deploy-20261001-190528.js:2906:    VALUES('phase2_last_status',?)
+  src\worker.before-final-deploy-20261001-190528.js:2907:    ON CONFLICT(key) DO UPDATE SET value=excluded.value
+  src\worker.before-final-deploy-20261001-190528.js:2908:  `).bind(
+  src\worker.before-final-deploy-20261001-190528.js:2909:    opportunityErrors.length ? "partial" : "complete"
+  src\worker.before-final-deploy-20261001-190528.js:2910:  ).run();
+  src\worker.before-final-deploy-20261001-190528.js:2911:
+  src\worker.before-final-deploy-20261001-190528.js:2912:  return {
+  src\worker.before-final-deploy-20261001-190528.js:2913:    ok: true,
+  src\worker.before-final-deploy-20261001-190528.js:2914:    ran_at: now,
+  src\worker.before-final-deploy-20261001-190528.js:2915:    buyer_matching: buyerMatchResult,
+  src\worker.before-final-deploy-20261001-190528.js:2916:    seller_matching: sellerMatchResult,
+  src\worker.before-final-deploy-20261001-190528.js:2917:    opportunities_created: opportunitiesCreated,
+  src\worker.before-final-deploy-20261001-190528.js:2918:    opportunity_errors: opportunityErrors,
+  src\worker.before-final-deploy-20261001-190528.js:2919:    followups
+  src\worker.before-final-deploy-20261001-190528.js:2920:  };
+  src\worker.before-final-deploy-20261001-190528.js:2921:}
+  src\worker.before-final-deploy-20261001-190528.js:2922:export default {
+> src\worker.before-final-deploy-20261001-190528.js:2923:  async scheduled(event, env, ctx) {
+  src\worker.before-final-deploy-20261001-190528.js:2924:    // Daily trigger remains reserved for Catalog Sync.
+  src\worker.before-final-deploy-20261001-190528.js:2925:    // Every-6-hours trigger runs Buyer -> Seller -> Opportunity automation.
+  src\worker.before-final-deploy-20261001-190528.js:2926:    const cron = String(event?.cron || "").trim();
+  src\worker.before-final-deploy-20261001-190528.js:2927:
+  src\worker.before-final-deploy-20261001-190528.js:2928:    if (cron === "0 */6 * * *" || cron.includes("*/6")) {
+  src\worker.before-final-deploy-20261001-190528.js:2929:      ctx.waitUntil(runScheduledPhase2(env));
+  src\worker.before-final-deploy-20261001-190528.js:2930:      return;
+  src\worker.before-final-deploy-20261001-190528.js:2931:    }
+  src\worker.before-final-deploy-20261001-190528.js:2932:
+  src\worker.before-final-deploy-20261001-190528.js:2933:    ctx.waitUntil(runScheduledCatalogSync(env));
+  src\worker.before-final-deploy-20261001-190528.js:2934:  },
+  src\worker.before-final-deploy-20261001-190528.js:2935:
+  src\worker.before-final-deploy-20261001-190528.js:2936:  async fetch(request, env) {
+  src\worker.before-final-deploy-20261001-190528.js:2937:    try {
+  src\worker.before-final-deploy-20261001-190528.js:2938:      if (request.method === "OPTIONS") return new Response(null, { headers: CORS });
+  src\worker.before-final-deploy-20261001-190528.js:2939:      const url = new URL(request.url);
+  src\worker.before-final-deploy-20261001-190528.js:2940:      if (url.pathname.startsWith('/api/landed-cost/') || url.pathname === '/api/approvals' || url.pathname 
+=== '/api/quotations' || url.pathname === '/api/orders' || url.pathname === '/api/purchases' || url.pathname === '/api/deliveries' || url.pathname === 
+'/api/notifications' || url.pathname === '/api/notifications/whatsapp' || url.pathname === '/api/dashboard' || url.pathname === '/api/controls' || url.pathname === 
+'/api/negotiations' || url.pathname === '/api/negotiations/message' || url.pathname === '/api/negotiations/followups') { const r = await handleFinalBlocks(request, 
+env); if (r) return r; }
+  src\worker.before-final-deploy-20261001-190528.js:2941:      if (url.pathname === '/api/settings' && request.method === 'POST') { const r = await 
+handleFinalBlocks(request, env); if (r) return r; }
+  src\worker.before-final-deploy-20261001-190528.js:2942:      if (url.pathname.startsWith('/api/sourcing/')) return await handleSellerOfferAutoSourcing(request, env);
+  src\worker.before-final-deploy-20261001-190528.js:2943:        if (url.pathname.startsWith("/api/product-seller-match")) return await 
+handleProductSellerMatching(request, env);
+  src\worker.before-final-deploy-20261001-190528.js:2944:if (url.pathname.startsWith("/api/opportunity-from-seller-match")) return await 
+handleBlock9Opportunity(request, env);
+  src\worker.before-final-deploy-20261001-190528.js:2945:        if (url.pathname.startsWith("/api/buyers") || url.pathname.startsWith("/api/buyer-requirements") || 
+url.pathname.startsWith("/api/buyer-matches") || url.pathname.startsWith("/api/buyer-match/")) return await handleMasterBuyerApi(request, env);
+  src\worker.before-final-deploy-20261001-190528.js:2946:      if (url.pathname.startsWith("/api/")) return await handleApi(request, env);
+  src\worker.before-final-deploy-20261001-190528.js:2947:
+  src\worker.before-final-deploy-20261001-190528.js:2948:  // BLOCK6_CUSTOMER_REQUEST_ROUTE
+  src\worker.before-final-deploy-20261001-190528.js:2949:  if (url.pathname === "/customer-request") {
+  src\worker.before-final-deploy-20261001-190528.js:2950:    return new Response(`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" 
+content="width=device-width,initial-scale=1"><title>PakThai Tech - Customer Request</title><style>body{font-family:Arial,sans-serif;max-width:760px;margin:40px 
+auto;padding:20px}input,textarea,button{width:100%;padding:12px;margin:6px 0 14px;box-sizing:border-box}button{cursor:pointer;font-weight:700}.ok{padding:12px;backgrou
+nd:#e9f7ef}.err{padding:12px;background:#fdecec}</style></head><body><h1>PAKTHAI TECH</h1><h2>Order / Request Quote</h2><form id="f"><input name="customer_name" 
+placeholder="Your name" required><input name="phone" placeholder="Phone"><input name="whatsapp" placeholder="WhatsApp"><input name="email" placeholder="Email"><input 
+name="city" placeholder="City" required><textarea name="delivery_address" placeholder="Delivery address"></textarea><input name="product_title" placeholder="Product / 
+requirement" required><input name="quantity" type="number" min="1" value="1" required><input name="requested_price_pkr" type="number" min="0" placeholder="Target 
+price PKR"><input name="max_budget_pkr" type="number" min="0" placeholder="Maximum budget PKR"><textarea name="customer_note" placeholder="Additional 
+requirement"></textarea><button>Submit Request</button></form><div id="m"></div><script>document.getElementById("f").addEventListener("submit",async 
+e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));const r=await 
+fetch("/api/customer-requests",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(d)});const j=await r.json();document.getElementById("m").
+className=r.ok?"ok":"err";document.getElementById("m").textContent=j.message||j.error||"Done";if(r.ok)e.target.reset();});</script></body></html>`,{headers:{"content-t
+ype":"text/html;charset=UTF-8"}});
+  src\worker.before-final-deploy-20261001-190528.js:2951:  }
+  src\worker.before-final-deploy-20261001-190528.js:2952:
+  src\worker.before-final-deploy-20261001-190528.js:2953:      return new Response(HTML, { headers: { "content-type": "text/html; charset=utf-8" } });
+  src\worker.before-final-deploy-20261001-190528.js:2954:    } catch (e) {
+  src\worker.before-final-deploy-20261001-190528.js:2955:      return json({ error: e?.message || String(e) }, 500);
+  src\worker.before-final-deploy-20261001-190528.js:2956:    }
+  src\worker.before-final-deploy-20261001-190528.js:2957:  }
+  src\worker.before-final-deploy-20261001-190528.js:2958:};
+  src\worker.before-final-deploy-20261001-190528.js:2959:
+  src\worker.before-final-deploy-20261001-190528.js:2960:
+  src\worker.before-final-deploy-20261001-190528.js:2961:
+  src\worker.before-final-deploy-20261001-190528.js:2962:
+
+

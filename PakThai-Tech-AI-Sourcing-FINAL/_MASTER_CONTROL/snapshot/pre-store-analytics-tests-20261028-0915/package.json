@@ -1,0 +1,18 @@
+{
+  "name": "pakthai-tech-ai-sourcing-final",
+  "private": true,
+  "version": "1.0.0",
+  "description": "PakThai Tech AI Sourcing Engine",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "dry-run": "wrangler deploy --dry-run",
+    "test": "node --test --test-concurrency=1 tools/audit/catalog-sync-retry.test.mjs auth-session.test.mjs tools/audit/engine-monitor.test.mjs tools/audit/ai-prospect-screening.test.mjs external-discovery-conversion.test.mjs seller-discovery.test.mjs tools/audit/discovery-batching.test.mjs tools/audit/public-catalog-smoke.mjs tools/audit/route-authorization.test.mjs tools/audit/gmail-autoreply.test.mjs tools/audit/gmail-negotiation.test.mjs tools/audit/security-hardening.test.mjs tools/audit/outreach-scheduler.test.mjs korea-seller-discovery.test.mjs market-discovery.test.mjs tools/audit/support-chat.test.mjs tools/audit/lead-routing.test.mjs tools/audit/partner-notifications.test.mjs tools/audit/email-provider.test.mjs tools/audit/telegram-notifications.test.mjs tools/audit/owner-request-alerts.test.mjs tools/audit/store-routes.test.mjs tools/audit/store-analytics.test.mjs && node .validate-inline.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "4.141.0"
+  },
+  "dependencies": {
+    "@block65/webcrypto-web-push": "2.0.0"
+  }
+}

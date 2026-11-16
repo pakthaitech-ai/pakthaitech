@@ -1,0 +1,15 @@
+﻿{
+  "name": "pakthai-tech-ai-sourcing-final",
+  "private": true,
+  "version": "1.0.0",
+  "description": "PakThai Tech AI Sourcing Engine",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "dry-run": "wrangler deploy --dry-run",
+    "test": "node --test auth-session.test.mjs seller-discovery.test.mjs tools/audit/public-catalog-smoke.mjs tools/audit/route-authorization.test.mjs tools/audit/gmail-autoreply.test.mjs tools/audit/security-hardening.test.mjs tools/audit/outreach-scheduler.test.mjs korea-seller-discovery.test.mjs market-discovery.test.mjs tools/audit/support-chat.test.mjs tools/audit/lead-routing.test.mjs tools/audit/email-provider.test.mjs tools/audit/telegram-notifications.test.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "4.141.0"
+  }
+}

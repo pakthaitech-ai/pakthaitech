@@ -1,0 +1,8 @@
+$ErrorActionPreference='Continue'
+$base='https://pakthai-ai-sourcing.pakthaitech.workers.dev'
+foreach($p in @('/api/health','/api/products','/api/zones','/api/sellers','/api/opportunities','/api/settings','/api/buyers','/api/buyer-requirements','/api/buyer-matches','/api/dashboard','/api/controls')){
+ try{$r=Invoke-WebRequest -Uri ($base+$p) -UseBasicParsing -TimeoutSec 15;$j=$r.Content|ConvertFrom-Json;$count='';foreach($k in @('products','zones','sellers','opportunities','buyers','requirements','matches')){if($j.$k -is [array]){$count=' '+$k+'='+$j.$k.Count;break}};Write-Output ($p+' HTTP '+[int]$r.StatusCode+$count);if($p -eq '/api/settings'){foreach($k in @('master_ai_mode','auto_search_enabled','seller_matching_enabled','negotiation_mode','auto_followup_enabled','opportunity_creation_enabled','catalog_sync_enabled','country_thailand_enabled','country_south_korea_enabled','country_pakistan_enabled','pakistan_source_enabled','owner_approval_required')){$x=@($j|Where-Object {$_.key -eq $k}|Select-Object -First 1);if($x.Count){Write-Output ('SETTING '+$k+'='+$x[0].value)}}}}catch{Write-Output ($p+' ERROR '+$_.Exception.Message)}
+}
+try{$s=Invoke-WebRequest -Uri 'https://pakthai-tech-store.pages.dev/' -UseBasicParsing -TimeoutSec 15;Write-Output ('STORE HTTP '+[int]$s.StatusCode+' bytes='+$s.RawContentLength)}catch{Write-Output ('STORE ERROR '+$_.Exception.Message)}
+$w='D:\Horse 2\PakThai-Tech-AI-Sourcing-FINAL\src\worker.js'
+Select-String -Path $w -Pattern 'scheduled\(|async scheduled|cron|syncSource\(|runProductSellerMatching|prepared_only|auto_followup|catalog_sync_enabled'|Select-Object -Last 35|ForEach-Object{Write-Output ('CODE '+$_.LineNumber+': '+$_.Line.Trim())}

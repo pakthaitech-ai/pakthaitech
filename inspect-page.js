@@ -1,0 +1,3 @@
+const ws = new WebSocket('ws://127.0.0.1:9222/devtools/page/C03B0A8FC9ADDCE697362F1287DF8212');
+ws.onopen=()=>ws.send(JSON.stringify({id:1,method:'Runtime.evaluate',params:{expression:"(async()=>{const d=[...document.querySelectorAll('details')].find(x=>x.innerText.includes('Gmail Inbox'));if(d)d.open=true;await loadGmailMailbox();return JSON.stringify({gmailText:document.querySelector('#gmailMailbox')?.innerText?.slice(0,8000),gmailHtml:document.querySelector('#gmailMailbox')?.innerHTML?.slice(0,1200),status:document.querySelector('#gmailConnectionStatus')?.innerText||'(status control not present)'})})()",awaitPromise:true,returnByValue:true}}));
+ws.onmessage=e=>{console.log(e.data);ws.close()};

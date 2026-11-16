@@ -1,0 +1,45 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import worker from "../../src/worker.js";
+
+const env = {
+  SESSION_SIGNING_SECRET: "route-auth-test-secret-with-at-least-32-characters",
+  DB: { prepare() { return { bind() { return this; }, async all() { return { results: [] }; }, async first() { return null; }, async run() { return { meta: { changes: 0 } }; } }; }, async batch() { return []; } }
+};
+
+const protectedRoutes = [
+  ["POST", "/api/settings"],
+  ["POST", "/api/approvals"],
+  ["POST", "/api/notifications/whatsapp"],
+  ["POST", "/api/negotiations/message"],
+  ["POST", "/api/buyer-prospects/discover"],
+  ["POST", "/api/seller-prospects/discover"],
+  ["GET", "/api/external-prospects"],
+  ["POST", "/api/opportunities"],
+  ["POST", "/api/sellers"],
+  ["POST", "/api/buyers"],
+  ["POST", "/api/buyer-requirements"],
+  ["POST", "/api/buyer-match/run"],
+  ["POST", "/api/sync/source"],
+  ["GET", "/api/customer-requests"],
+  ["GET", "/api/gmail/status"],
+  ["POST", "/api/orders"],
+  ["POST", "/api/purchases"]
+];
+
+for (const [method, path] of protectedRoutes) {
+  test(`unauthenticated ${method} ${path} is denied before handler`, async () => {
+    const response = await worker.fetch(new Request(`https://worker.test${path}`, {
+      method,
+      headers: { "content-type": "application/json" },
+      ...(method === "POST" ? { body: JSON.stringify({ test: true }) } : {})
+    }), env);
+    assert.equal(response.status, 401, `expected 401 for ${method} ${path}; got ${response.status}`);
+  });
+}
+
+test("public read-only catalog remains available without session", async () => {
+  const response = await worker.fetch(new Request("https://worker.test/api/catalog"), env);
+  assert.notEqual(response.status, 401);
+  assert.ok([200, 503].includes(response.status), `unexpected status ${response.status}`);
+});

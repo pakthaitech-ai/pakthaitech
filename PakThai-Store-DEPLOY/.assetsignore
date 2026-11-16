@@ -1,0 +1,7 @@
+.wrangler
+_backup-meta-policy-20261012-180704/
+_snapshots/
+*.bak
+*.pre-*
+*.ps1
+README.md

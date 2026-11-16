@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json.schemastore.org/wrangler.json",
+  "name": "pakthai-ai-sourcing",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-09-25",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "pakthai-sourcing-db",
+      "database_id": "a2d77cc7-c50e-40c5-91da-a129865fffa1"
+    }
+  ]
+}

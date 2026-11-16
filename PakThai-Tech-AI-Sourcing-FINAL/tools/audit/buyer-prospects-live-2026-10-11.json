@@ -1,0 +1,26 @@
+{
+  "ran_at": "2026-10-11T08:33:22.221Z",
+  "source": "OpenStreetMap/Photon/Nominatim",
+  "search_phrase": "computer hardware retailer",
+  "cities": [
+    "Faisalabad",
+    "Lahore",
+    "Karachi"
+  ],
+  "results_seen": 0,
+  "errors": [
+    {
+      "city": "Faisalabad",
+      "error": "OpenStreetMap business search unavailable: The operation was aborted due to timeout"
+    },
+    {
+      "city": "Lahore",
+      "error": "OpenStreetMap business search unavailable: The operation was aborted due to timeout"
+    },
+    {
+      "city": "Karachi",
+      "error": "OpenStreetMap business search unavailable: The operation was aborted due to timeout"
+    }
+  ],
+  "prospects": []
+}

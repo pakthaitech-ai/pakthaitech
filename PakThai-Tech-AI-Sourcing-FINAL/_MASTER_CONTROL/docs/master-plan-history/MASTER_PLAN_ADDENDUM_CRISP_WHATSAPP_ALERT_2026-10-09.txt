@@ -1,0 +1,45 @@
+PAKTHAI TECH MASTER PLAN ADDENDUM
+Date: 2026-10-09
+Feature: Crisp Live Chat -> WhatsApp owner alert
+
+GOAL
+Keep customer messages in the existing Crisp mobile app and additionally notify the owner through the designated WhatsApp recipient when a visitor sends a message in the PakThai Tech store chat.
+
+CONFIRMED
+- Store Crisp website ID: 5787d483-b0e3-4627-b50d-5e6c9ae5b86b
+- Store: https://pakthai-tech-store.pages.dev/
+- Worker: https://pakthai-ai-sourcing.pakthaitech.workers.dev
+- Existing Worker can send WhatsApp Cloud API messages; a prior direct send test was confirmed delivered to the UAE test recipient.
+- Existing Worker sender Phone Number ID fallback in source: 1426391470555242.
+- Intended alert recipient is the official Pakistan WhatsApp number (+92 300 7982289), not the UAE test number.
+
+DESIGN
+1. Configure a Crisp Website Hook for event message:send.
+2. Receive it at a dedicated Worker route, protected by a high-entropy CRISP_WEBHOOK_SECRET; website hooks are unsigned, so reject missing/incorrect secret.
+3. Validate website_id equals 5787d483-b0e3-4627-b50d-5e6c9ae5b86b, event equals message:send, data.from equals user, and data.type equals text.
+4. Send a concise internal alert containing the visitor's message and session reference to a separately configured CRISP_ALERT_WHATSAPP_NUMBER.
+5. Log send status without exposing access tokens or webhook secrets. Return HTTP 2xx only when the hook is accepted/handled. Ignore operator messages and other websites.
+6. Crisp continues to receive all chat messages normally. This is notification only; it does not move the conversation, send an automatic customer reply, or authorize a purchase.
+
+BLOCKER / SAFETY CHECK BEFORE LIVE DEPLOYMENT
+Do not assume the Pakistan official number can receive an alert sent by the same WhatsApp Cloud API number. First verify whether +92 300 7982289 is the Cloud API sender number (associated with Phone Number ID 1426391470555242) or a separate WhatsApp recipient. If it is the sender itself, configure a different owner/agent WhatsApp recipient; WhatsApp Cloud API generally cannot deliver a message from a number to itself. Keep the UAE number test-only and do not register another number or change the current WhatsApp account.
+
+LIVE STATUS AS OF 2026-10-09
+- Worker health endpoint responds OK.
+- Crisp Website Hook is not yet confirmed configured.
+- Crisp-to-WhatsApp forwarding is NOT yet deployed or live-verified.
+- Direct Worker-to-UAE WhatsApp test was successful earlier; this does not verify Crisp forwarding or delivery to the Pakistan number.
+
+ACCEPTANCE TEST
+After sender/recipient identity is verified, deploy the protected endpoint, add the Crisp Website Hook, send one real visitor text, and verify: (a) message appears in Crisp app, (b) WhatsApp alert arrives at the approved recipient, and (c) Worker/Crisp hook logs show successful handling. Also test an operator reply is not forwarded.
+
+
+LIVE AUDIT UPDATE — 2026-10-09 (remote desktop + public endpoints)
+- Store homepage https://pakthai-tech-store.pages.dev/ returned HTTP 200 (28,210 bytes).
+- Worker /api/health returned HTTP 200.
+- GET API audit: /api/products 200 (188 products); /api/zones 200 (3); /api/sellers 200 (7); /api/opportunities 200 (27); /api/settings 200 (48 settings); /api/buyers 200 (2); /api/buyer-requirements 200 (4); /api/buyer-matches 200 (9); /api/dashboard 200; /api/controls 200.
+- GET /api/crisp/webhook and /api/webhooks/crisp both returned 404. Source review found no Crisp webhook route, no message:send handling, and no Crisp website ID or CRISP_WEBHOOK_SECRET / CRISP_ALERT_WHATSAPP_NUMBER config references.
+- Source review found existing WhatsApp Cloud sender helper and POST /api/notifications/whatsapp. It uses WHATSAPP_PHONE_NUMBER_ID with fallback 1426391470555242 and WHATSAPP_ACCESS_TOKEN. Do not expose token values in reports.
+- SECURITY FINDING: source route for POST /api/notifications/whatsapp has no visible authentication/secret validation before sending a Cloud API message. Treat as high priority before production; protect the endpoint against public misuse before connecting Crisp. Do not send test messages during this audit.
+- Meta sender identity unresolved: local source confirms a Phone Number ID value but does not reveal which display phone number Meta associates with it. Remote tooling did not provide an authenticated Meta dashboard session, and Cloudflare secrets cannot be read back from source. Therefore cannot yet confirm whether +92 300 7982289 is the API sender or a separate recipient. Do not change or re-register any number.
+- Crisp -> WhatsApp owner alert remains NOT live. Crisp Website Hook must be configured after the protected route and sender/recipient identity are verified.

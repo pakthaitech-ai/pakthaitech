@@ -1,0 +1,1 @@
+const r=await fetch('http://127.0.0.1:9222/json'); console.log('CDP_HTTP',r.status); const t=await r.json(); console.log(JSON.stringify(t.filter(x=>x.type==='page').map(x=>({title:x.title,url:x.url,webSocketDebuggerUrl:!!x.webSocketDebuggerUrl})),null,2));

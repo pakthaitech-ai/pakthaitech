@@ -1,0 +1,30 @@
+2026-10-23 11:21:19.969: [INFO] CurrentProfilePath: D:\pakthai\edge-cdp-profile\Default
+2026-10-23 11:21:19.969: [INFO] Profiles total count: 1
+2026-10-23 11:21:19.969: [INFO] Profile: name=Profile 1 path=D:\pakthai\edge-cdp-profile\Default lastActive=null
+2026-10-23 11:21:19.969: [INFO] LastUsedProfileDir: D:\pakthai\edge-cdp-profile\Default
+2026-10-23 11:21:19.969: [INFO] VisibilityChanged: 0
+2026-10-23 11:21:20.014: [INFO] OnDoneLoading sync enabled: 0
+2026-10-23 11:21:20.014: [INFO] BookmarkModelLoaded, ids_reassigned: 0
+2026-10-23 11:21:20.014: [INFO] BookmarksLoadDropped droppedNodes=0
+2026-10-23 11:21:20.014: [INFO] BookmarksSnapshot Startup total=0 bar=0 other=0 mobile=0 showBar=0 showBarNTP=1
+2026-10-23 11:21:20.111: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-10-23 11:21:22.668: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-10-23 11:21:22.674: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 3
+2026-10-23 11:21:22.682: [INFO] Primary account changed.
+2026-10-23 11:21:22.682: [INFO] OnPrimaryAccountChanged PrimaryAccountChangeEvent::Type::kSet
+2026-10-23 11:21:22.704: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 3
+2026-10-23 11:21:22.725: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 3
+2026-10-23 11:21:34.694: [INFO] BookmarkBarPrefChanged showBar=0 showBarNTP=1
+2026-10-23 11:21:55.106: [INFO] Sync initialization duration: 32221ms
+2026-10-23 11:39:36.331: [INFO] CurrentProfilePath: D:\pakthai\edge-cdp-profile\Default
+2026-10-23 11:39:36.331: [INFO] Profiles total count: 1
+2026-10-23 11:39:36.331: [INFO] Profile: name=Personal path=D:\pakthai\edge-cdp-profile\Default lastActive=2026-10-23T11:23:51.772Z
+2026-10-23 11:39:36.331: [INFO] LastUsedProfileDir: D:\pakthai\edge-cdp-profile\Default
+2026-10-23 11:39:36.331: [INFO] MostRecentlyActiveProfile: name=Personal path=D:\pakthai\edge-cdp-profile\Default lastActive=2026-10-23T11:23:51.772Z
+2026-10-23 11:39:36.331: [INFO] VisibilityChanged: 0
+2026-10-23 11:39:36.411: [INFO] OnDoneLoading sync enabled: 1
+2026-10-23 11:39:36.411: [INFO] BookmarkModelLoaded, ids_reassigned: 0
+2026-10-23 11:39:36.411: [INFO] BookmarksLoadDropped droppedNodes=0
+2026-10-23 11:39:36.411: [INFO] BookmarksSnapshot Startup total=0 bar=0 other=0 mobile=0 showBar=0 showBarNTP=1
+2026-10-23 11:39:36.538: [INFO] Sync initialization duration: 101ms
+2026-10-25 13:09:25.260: [INFO] BookmarksSnapshot Shutdown total=0 bar=0 other=0 mobile=0 showBar=0 showBarNTP=1

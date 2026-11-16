@@ -1,0 +1,1 @@
+﻿const fs=require('fs');const p='src/worker.js';let s=fs.readFileSync(p,'utf8');const bad='  let updates = 0;`r`n  let inboundMessages = 0;';if(!s.includes(bad))throw Error('bad counter literal not found');s=s.replace(bad,'  let updates = 0;\n  let inboundMessages = 0;');fs.writeFileSync(p,s);console.log('fixed webhook counter newline');

@@ -1,0 +1,55 @@
+# PakThai AI Source — Current Handoff
+
+Updated: 2026-10-19 (Asia/Karachi)
+Purpose: Continue the current WhatsApp verification and free partner-alert task from this exact state. Read this file before repeating checks. Do not restart completed setup.
+
+## Project
+- Project root: `D:\pakthai\PakThai-Tech-AI-Sourcing-FINAL`
+- AI Source Worker: `https://pakthai-ai-sourcing.pakthaitech.workers.dev/`
+- Worker service: `pakthai-ai-sourcing`
+- Cloudflare D1 binding: `pakthai-sourcing-db`
+- Canonical Worker source: `src\worker.js`
+- Free WhatsApp handler: `src\whatsapp-free-window.js`
+- Project operating rules: `FINAL_SOURCE_OF_TRUTH.md`
+- Prior general handover: `NEXT_CHAT_HANDOVER.md`
+- Release history: `RELEASE_LOG.md`
+- Do not print or copy secret values, tokens, passwords, OAuth credentials, or verification codes into chat or handoff files.
+
+## User's goal
+Use AI Source to deliver WhatsApp service-window replies/partner lead details without paid WhatsApp sends. UAE number `+971562355960` belongs to the Owner and is the self-test recipient. Korea contact `+821068879265` is M Nadeem; do not send further tests to him unless the Owner specifically reconfirms. Saved partners must opt in with START. Quote, price, order, purchase, and commitment decisions remain Owner-approved.
+
+## Current WhatsApp facts
+- PakThai sender: `+92 300 7982289`; Meta phone-number ID `1426391470555242`; WABA ID `2330969974304488`; Meta app ID `2689904551425462`.
+- Meta WhatsApp Manager last showed the sender as Connected / High quality. The authenticated Graph diagnostics reported `status=CONNECTED`, `platform_type=CLOUD_API`, but `code_verification_status=NOT_VERIFIED`.
+- AI Source code deliberately fails closed for automatic sends unless the configured sender is confirmed to be the connected, verified PakThai Cloud API number. Thus an incoming START does not by itself prove the auto-reply or outbound delivery works.
+- The Owner's UAE partner entry is active (`ahmad`, UAE). An inbound `START` from `971562355960` was received and saved on 2026-10-19 (`2026-10-19T07:08:01Z`); webhook/inbound path has evidence. That inbound does not prove an outgoing reply was delivered.
+- Historical outgoing WhatsApp entries for UAE/Korea show `Sent · no delivery receipt`; do not report those as delivered.
+- The Owner selected Voice call in the AI Source verification panel and clicked **Request verification code**. Meta returned: `Request code error (Meta code 136024)`. No verification code/call was issued, and no code was entered. Earlier, pressing Verify with an empty field only displayed `Enter the code from Meta privately first.`
+- Do not remove/re-add or re-register the existing Connected number. Do not keep retrying SMS/voice requests immediately; Meta's exact reason for 136024 is not known from the displayed main code alone.
+- Meta notifications showed the app switched to Live and `hello_world` was approved. However, the Meta Message Templates page screenshot had `Test WhatsApp Business Account` selected. Production approval of that template under the `Pakthai` WABA is therefore not confirmed. The live/template notices are separate from phone-number code verification.
+- The Meta Postman page is official read-only examples, not connected to the user's production credentials. It showed `No Environment`; no Postman request was run. The docs describe phone ownership verification before registration and a separate registration step. Because the current sender is already Connected, do not attempt registration/deregistration as a workaround.
+- The `messages` webhook subscription and callback were previously configured; the latest evidence is actual UAE inbound START in the AI Source inbox.
+
+## Latest code change and deployment
+- Updated only the Owner dashboard verification-request error display in `src\worker.js`. If Meta rejects a future request, the dashboard now includes returned Meta code, subcode, error type, transient flag, and trace ID when present. Backend already returned these fields; the UI previously hid all except the main code.
+- Backup before edit: `_MASTER_CONTROL\snapshot\pre-meta-code-error-detail-20261019-131111\worker.js` and `RELEASE_LOG.md`.
+- Latest deployment: Worker version `6c8aae59-5912-4884-9598-5b1d739c25d9`; schedules unchanged (`0 2 * * *`, `0 4 * * *`, `0 * * * *`).
+- Post-deploy checks: Worker root HTTP 200; `/api/health` HTTP 200 with `ok:true`; live root contains the new diagnostic UI.
+- Validation: `node --check src\worker.js` passed; Wrangler `deploy --dry-run` passed. Full suite returned 110/112 because of two existing stale WhatsApp wording assertions: (1) manual-draft subject expectation in partner notifications; (2) retired paused-provider dashboard wording. These do not exercise this UI diagnostic change.
+- This UI deployment did not make a Meta API request, send a WhatsApp message, or modify D1 rows.
+- Details are recorded in `RELEASE_LOG.md` under `2026-10-19 — Meta phone-code error diagnostics`.
+
+## Recent screenshot / usage note
+Owner shared a usage notification reading `10% usage remaining`, resets monthly, next reset `Nov 17 at 10:29 AM`. Treat that as a screenshot observation; verify if needed because the screenshot did not identify the usage meter or timezone.
+
+## Continue from here
+1. Do not repeat code requests until there is a reason to try again; the latest voice request just returned Meta 136024.
+2. The existing verification form is under **Partner Delivery & Provider Status** in AI Source. If a later, deliberate single retry is appropriate, choose Voice call, press Request verification code once, and inspect all diagnostic fields now shown. If Meta accepts it, the Owner enters the code privately in that form; never ask the Owner to send the code in chat.
+3. If Meta again refuses, use the exact subcode/error type/transient flag/trace ID from the updated UI for a Meta support case rather than repeatedly requesting codes. Do not invent an error cause.
+4. Once diagnostics report `code_verification_status=VERIFIED` while status is still CONNECTED and platform is CLOUD_API, recheck the WABA and perform one Owner-authorized UAE self-test; wait for a real Meta `delivered` status receipt before claiming delivery.
+5. In WhatsApp Manager templates, select production WABA `Pakthai` (not `Test WhatsApp Business Account`) before concluding whether an approved template exists there. The free service-window path itself is a session text message; no paid/template send should be attempted for this test.
+6. Do not test Nadeem/Korea again without the Owner's fresh confirmation. Preserve Owner approval requirements for quotes, prices, purchases, and commitments.
+
+## Useful source references
+- Meta's official Postman Cloud API collection (read-only docs): `https://www.postman.com/meta/whatsapp-business-platform/documentation/wlk6lh4/whatsapp-cloud-api?entity=folder-066d0881-3f31-4f0c-accc-d0fa2e4b2ed9`
+- Latest live AI Source: `https://pakthai-ai-sourcing.pakthaitech.workers.dev/`

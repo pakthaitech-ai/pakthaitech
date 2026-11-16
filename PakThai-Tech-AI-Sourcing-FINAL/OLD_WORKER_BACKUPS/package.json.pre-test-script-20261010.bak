@@ -1,0 +1,14 @@
+{
+  "name": "pakthai-tech-ai-sourcing-final",
+  "private": true,
+  "version": "1.0.0",
+  "description": "PakThai Tech AI Sourcing Engine",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "dry-run": "wrangler deploy --dry-run"
+  },
+  "devDependencies": {
+    "wrangler": "4.141.0"
+  }
+}

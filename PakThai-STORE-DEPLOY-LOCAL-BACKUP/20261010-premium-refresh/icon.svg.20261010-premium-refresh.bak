@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+<title>PakThai Tech</title>
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#173d69"/><stop offset="1" stop-color="#081a32"/></linearGradient><linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe39a"/><stop offset="1" stop-color="#e8a923"/></linearGradient></defs>
+<rect width="512" height="512" rx="112" fill="url(#bg)"/>
+<rect x="22" y="22" width="468" height="468" rx="96" fill="none" stroke="#79c5f2" stroke-opacity=".65" stroke-width="5"/>
+<path d="M91 108h171c76 0 118 40 118 103s-42 104-118 104h-65v89H91V108zm106 84v40h64c15 0 23-7 23-20s-8-20-23-20h-64z" fill="url(#gold)"/>
+<path d="M292 108h129v78h-65v218h-88V186h-44v-78h68z" fill="#f5fbff" opacity=".96"/>
+<path d="M90 430h330" stroke="#65c7ef" stroke-width="9" stroke-linecap="round"/>
+</svg>

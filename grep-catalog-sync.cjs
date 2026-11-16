@@ -1,0 +1,1 @@
+const fs=require('fs');const p='D:/pakthai/PakThai-Tech-AI-Sourcing-FINAL/src/worker.js';const a=fs.readFileSync(p,'utf8').split(/\r?\n/);const re=/catalog sync|sync source catalog|retry-after|429|catalogsync|sync-catalog/i;for(let i=0;i<a.length;i++)if(re.test(a[i]))console.log((i+1)+': '+a[i].slice(0,350));

@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PakThai Tech — Gaming Hardware & PC Store</title>
+<meta name="description" content="PakThai Tech — Gaming PCs, graphics cards, processors, storage and PC components.">
+<meta property="og:title" content="PakThai Tech — Gaming Hardware & PC Store">
+<meta property="og:description" content="PakThai Tech — Gaming PCs, graphics cards, processors, storage and PC components.">
+<meta property="og:image" content="/assets/pakthai-tech-brand-cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="PakThai Tech — Gaming Hardware & PC Store">
+<meta name="twitter:image" content="/assets/pakthai-tech-brand-cover.png">
+<meta name="theme-color" content="#173d69">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PakThai Tech">
+<link rel="apple-touch-icon" href="/icons/icon-192.png?v=6">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png?v=6">
+<link rel="shortcut icon" href="/icon.svg?v=6">
+<link rel="manifest" href="/manifest.webmanifest">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{font-family:Inter,sans-serif;background:#0a0e17;color:#e5e7eb}.card{background:#131a29;border:1px solid #202b3f}.gold{color:#f59e0b}.btn{background:#f59e0b;color:#111827;font-weight:800}.btn:hover{filter:brightness(1.08)}.muted{color:#94a3b8}.pill{border:1px solid #26344b;background:#111827}.pill.active{background:#f59e0b;color:#111827;border-color:#f59e0b}.line{border-color:#202b3f}.skeleton{background:linear-gradient(90deg,#131a29 25%,#1b2537 50%,#131a29 75%);background-size:200% 100%;animation:sh 1.3s infinite}@keyframes sh{to{background-position:-200% 0}}
+#pakthaiSupportDock{position:fixed;right:18px;bottom:18px;z-index:80;display:flex;flex-direction:column;gap:12px}
+.support-fab{width:58px;height:58px;border-radius:9999px;display:grid;place-items:center;color:#fff;border:2px solid rgba(255,255,255,.92);box-shadow:0 8px 26px rgba(0,0,0,.42);transition:transform .15s ease,box-shadow .15s ease}
+.support-fab:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,0,0,.5)}
+.support-fab:focus-visible{outline:3px solid #f5c35a;outline-offset:3px}
+.support-fab svg{width:28px;height:28px;display:block}
+.whatsapp-fab{background:#20c96b}.chat-fab{background:#2563eb}
+@media(max-width:480px){#pakthaiSupportDock{right:12px;bottom:12px;gap:10px}.support-fab{width:52px;height:52px}}
+@media(prefers-reduced-motion:reduce){.support-fab{transition:none}}
+/* Premium PakThai refresh: deep navy, electric blue and warm gold */
+:root{color-scheme:dark;--pt-navy:#081426;--pt-blue:#15365d;--pt-gold:#f7bd4a;--pt-border:rgba(117,166,224,.24)}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+body{background:radial-gradient(ellipse at 12% 0%,rgba(30,91,153,.28),transparent 38%),radial-gradient(ellipse at 92% 18%,rgba(95,62,157,.15),transparent 30%),linear-gradient(145deg,#071222 0%,#0b1a30 52%,#091426 100%);color:#f1f6ff}
+header.sticky{background:rgba(7,18,34,.91)!important;border-bottom-color:rgba(93,151,216,.28)!important;box-shadow:0 8px 32px rgba(0,0,0,.18)}
+.card{background:linear-gradient(145deg,rgba(21,39,64,.96),rgba(13,27,47,.98));border-color:var(--pt-border);box-shadow:0 10px 32px rgba(0,0,0,.12)}
+.pill{background:rgba(19,39,65,.88);border-color:rgba(112,159,211,.3);color:#e8f2ff}
+.pill:hover{border-color:rgba(247,189,74,.7);background:rgba(32,61,95,.95)}
+.pill.active,.btn{background:linear-gradient(135deg,#ffd36b,#f3a928);color:#101a2a;border-color:#ffd36b;box-shadow:0 5px 18px rgba(243,169,40,.14)}
+.gold{color:#ffd06a}
+.muted{color:#a8bdd7}
+.line{border-color:rgba(117,166,224,.22)}
+input,select,textarea{background-color:#10223b!important;border-color:rgba(117,166,224,.28)!important;color:#f1f6ff!important}
+input::placeholder,textarea::placeholder{color:#9ab0cb!important}
+main>section:first-child>div{background:linear-gradient(135deg,#10294a,#101b32)!important;border-color:rgba(247,189,74,.3)!important}
+#grid article{transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+#grid article:hover{transform:translateY(-3px);border-color:rgba(247,189,74,.5);box-shadow:0 16px 34px rgba(0,0,0,.25)}
+#grid article .aspect-\[4\/3\]{background:linear-gradient(145deg,#122945,#0c1a2e)}
+.support-fab{box-shadow:0 8px 28px rgba(0,0,0,.45),0 0 0 4px rgba(113,165,226,.08)}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}#grid article{transition:none}}
+/* PakThai premium LIGHT finish: bright slate, white surfaces, navy typography, rich gold */
+:root{color-scheme:light;--pt-navy:#102747;--pt-blue:#1d4b7a;--pt-gold:#b87908;--pt-border:#d8e3f0}
+html,body{background:#edf3fa;color:#172b46}
+body{background:radial-gradient(ellipse at 8% 0%,rgba(107,177,239,.35),transparent 34%),radial-gradient(ellipse at 92% 12%,rgba(207,224,248,.8),transparent 35%),linear-gradient(180deg,#f5f8fd 0%,#eaf1f9 52%,#f7f9fc 100%);color:#172b46}
+header.sticky{background:rgba(250,252,255,.94)!important;border-bottom:1px solid #d7e3f0!important;box-shadow:0 8px 28px rgba(28,57,92,.09)}
+header a,header nav button{color:#17375e}
+header .muted{color:#61748c}
+.card{background:linear-gradient(145deg,#ffffff 0%,#f7faff 100%);border:1px solid #d7e3f0;box-shadow:0 8px 26px rgba(30,62,100,.075);color:#172b46}
+.pill{background:#fff;border:1px solid #cfdeee;color:#23466d;box-shadow:0 2px 8px rgba(25,61,101,.035)}
+.pill:hover{background:#edf5ff;border-color:#8bb6e3;color:#12385f}
+.pill.active,.btn{background:linear-gradient(135deg,#ffd979 0%,#f3b632 100%);color:#172b46;border:1px solid #e8ae30;box-shadow:0 5px 16px rgba(185,126,17,.18);font-weight:800}
+.btn:hover{filter:brightness(1.035);box-shadow:0 7px 20px rgba(185,126,17,.25)}
+.gold{color:#9a6500}
+.muted{color:#62758d}
+.line{border-color:#d7e3f0}
+input,select,textarea{background:#fff!important;border-color:#cbd9e9!important;color:#172b46!important;box-shadow:inset 0 1px 2px rgba(25,55,90,.025)}
+input::placeholder,textarea::placeholder{color:#788ba2!important}
+main>section:first-child>div{background:linear-gradient(135deg,#dcecff,#ffffff)!important;border-color:#cfdeef!important;box-shadow:0 18px 45px rgba(34,77,125,.12)}
+#status.text-emerald-400{color:#16803d!important}#status.text-rose-400{color:#c2413b!important}
+#grid article{background:linear-gradient(180deg,#fff 0%,#f8fbff 100%);border-color:#d5e2f0;box-shadow:0 8px 24px rgba(24,57,96,.075)}
+#grid article:hover{transform:translateY(-4px);border-color:#e7b447;box-shadow:0 16px 34px rgba(24,57,96,.14)}
+#grid article .aspect-\\[4\\/3\\]{background:linear-gradient(145deg,#f4f8fd,#e6eff9)}
+#grid article img{mix-blend-mode:normal;filter:none;opacity:1;background:transparent}
+#categoryTiles .category-thumb img{mix-blend-mode:normal;filter:none;opacity:1;background:transparent}
+/* Show the complete PakThai brand-cover artwork at its natural aspect ratio on every screen. */
+#heroCoverFrame{height:auto;background:#f4f8fd}
+#heroCoverFrame img{width:100%;height:auto;max-height:none;object-fit:contain;object-position:center;display:block}
+#grid article .bg-emerald-500\\/90{background:#16834b;color:#fff}
+#grid article .bg-slate-700\\/90{background:#e6ebf2;color:#485a70}
+#productModal .card,#orderModal .card{background:#fff;color:#172b46}
+#productModal .bg-\\[\\#0e1420\\]{background:#f0f5fb}
+#productModal .bg-emerald-500\\/15{background:#e2f7e9;color:#17663a;border-color:#a8dfbb}
+#productModal .bg-slate-700\\/40{background:#eef2f7;color:#596b80;border-color:#d4dce6}
+#orderModal .text-xs.muted,#productModal .text-xs.muted{color:#63758c}
+#orderModal .border-b,#productModal .border-b{background:#f5f8fc}
+#builderFields select{background-color:#fff!important}
+footer{background:#e7eff8;color:#23415f}
+footer .muted{color:#60758d}
+@media(max-width:640px){body{background:linear-gradient(180deg,#f1f6fc 0%,#eaf1f9 55%,#f8fafd 100%)}}
+/* Category thumbnails and product image fallback */
+#categoryTiles .category-thumb{width:54px;height:54px;flex:0 0 54px;display:grid;place-items:center;overflow:hidden;border-radius:12px;background:#f4f8fd;border:1px solid #dce7f3}
+#categoryTiles .category-thumb img{width:100%;height:100%;object-fit:contain;padding:4px;mix-blend-mode:normal;filter:none;opacity:1;background:transparent}
+#categoryTiles .category-thumb .image-fallback{font-size:8px;min-height:0;padding:3px}
+.image-fallback{display:grid;place-content:center;width:100%;height:100%;min-height:120px;padding:16px;text-align:center;color:#62758d;font-size:12px;font-weight:700;background:linear-gradient(145deg,#f7faff,#e6eff9)}
+/* Final responsive polish: bright premium storefront, readable category tiles and recognizable contact marks */
+.social-link{display:flex;align-items:center;gap:10px;min-width:0;text-align:left;text-decoration:none;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+.social-link:hover{transform:translateY(-2px);border-color:#e3b13f;box-shadow:0 8px 20px rgba(24,57,96,.1)}
+.social-link>span:nth-child(2){display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.social-link strong{font-size:13px;line-height:1.25;color:#17375e}
+.social-link small{font-size:10px;line-height:1.25;color:#667b93;overflow-wrap:anywhere}
+.social-arrow{font-size:16px;color:#8799ad}
+.social-icon{width:36px;height:36px;flex:0 0 36px;border-radius:11px;display:grid;place-items:center;font-weight:900;font-size:22px;color:white}
+.social-icon svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.social-icon .fill{fill:currentColor;stroke:none}.social-icon .dot{fill:currentColor;stroke:none}.social-icon .play{fill:white;stroke:white}.social-icon .detail{stroke:white}
+.social-icon.facebook{background:#1877f2;font-family:Arial,sans-serif;font-size:31px;align-items:end;line-height:32px}
+.social-icon.instagram{background:linear-gradient(135deg,#7c3aed,#e1306c,#f9a825)}
+.social-icon.threads{background:#111827;font-size:22px}
+.social-icon.youtube{background:#ff0033}.social-icon.whatsapp{background:#18a957}
+.social-icon.line-icon{background:#06c755;font-size:11px;letter-spacing:-.6px}
+.social-icon.telegram{background:#229ed9}.social-icon.imo{background:#2678ed}.social-icon.crisp{background:#246bfe}
+#categoryTiles .category-tile{background:linear-gradient(145deg,#fff,#f1f7ff);border:1px solid #d4e2f1;box-shadow:0 7px 20px rgba(24,57,96,.06);color:#17375e;min-height:104px}
+#categoryTiles .category-tile:hover{border-color:#e2b344;box-shadow:0 12px 26px rgba(24,57,96,.12);transform:translateY(-2px)}
+#categoryTiles .category-symbol{width:42px;height:42px;border-radius:13px;background:#e5effb;color:#1c4e7c;display:grid;place-items:center;font-size:22px}
+#categoryTiles .category-count{font-size:11px;color:#687d94}
+@media(max-width:480px){#categoryTiles .category-tile{min-height:92px;padding:12px}#categoryTiles .category-symbol{width:36px;height:36px;flex-basis:36px;font-size:19px}.social-link{gap:8px;padding:10px}.social-icon{width:32px;height:32px;flex-basis:32px;border-radius:9px}}
+@media(max-width:480px){#grid article .p-4{padding:10px}#grid article .px-4{padding-left:10px;padding-right:10px}#grid article h3{font-size:12px;line-height:1.35}#grid article .text-xl{font-size:15px;line-height:1.4}#grid article .text-sm{font-size:11px;line-height:1.35}#grid article .text-\[10px\]{font-size:9px}}
+</style>
+
+</head>
+<body>
+<header class="sticky top-0 z-40 bg-[#0a0e17]/95 backdrop-blur border-b line">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
+    <a href="/" class="flex items-center gap-3" aria-label="PakThai Tech home"><img src="/icon.svg?v=6" alt="PakThai Tech logo" class="w-11 h-11 rounded-xl" width="44" height="44"><div><div class="font-extrabold text-lg">PakThai Tech</div><div class="text-xs muted">Gaming • PC • Components</div></div></a>
+    <nav class="hidden md:flex gap-6 text-sm font-semibold"><a href="#products" class="hover:text-amber-400">Products</a><a href="#builder" class="hover:text-amber-400">PC Builder</a><a href="#payment" class="hover:text-amber-400">Payment</a><a href="#connect" class="hover:text-amber-400">Connect</a><button data-action="open-chat" class="hover:text-amber-400">Live Chat</button></nav>
+    <div class="flex items-center gap-2"><button id="installBtn" class="pill rounded-xl px-3 py-2 text-sm hidden" type="button">📱 Install App</button><a href="#products" class="btn rounded-xl px-4 py-2 text-sm">Shop Now</a></div>
+  </div>
+</header>
+<main>
+<section class="max-w-7xl mx-auto px-4 pt-5">
+  <div id="heroCoverFrame" class="overflow-hidden rounded-3xl border border-[#202b3f] shadow-2xl bg-[#f4f8fd]">
+    <img src="/assets/pakthai-tech-brand-cover.png" alt="PakThai Tech" loading="eager" fetchpriority="high">
+  </div>
+</section>
+<section class="max-w-7xl mx-auto px-4 pt-6 md:pt-8 pb-10 grid lg:grid-cols-2 gap-8 md:gap-10 items-center">
+  <div><div class="inline-flex pill rounded-full px-3 py-1 text-xs mb-4">PAKTHAI TECH • LIVE CATALOG</div><h1 class="text-4xl md:text-6xl font-black leading-tight">Gaming hardware,<br><span class="gold">PakThai Tech</span> style.</h1><p class="muted mt-5 max-w-xl">Browse the live product catalog with current prices and product images. The catalog is synchronized from your store source so new products and price changes can appear automatically.</p><div class="mt-7 flex gap-3 flex-wrap"><a href="#products" class="btn rounded-xl px-5 py-3">Browse Products</a><a href="#builder" class="pill rounded-xl px-5 py-3">Build a PC</a><button id="heroInstallBtn" class="pill rounded-xl px-5 py-3" type="button">📱 Mobile App</button></div></div>
+  <div class="card rounded-3xl p-6"><div class="text-sm muted">Live catalog status</div><div id="status" class="mt-2 text-xl font-bold">Connecting…</div><div class="grid grid-cols-3 gap-3 mt-6"><div class="card rounded-2xl p-4"><div class="text-2xl font-black" id="count">—</div><div class="text-xs muted">Products</div></div><div class="card rounded-2xl p-4"><div class="text-2xl font-black" id="stock">—</div><div class="text-xs muted">In stock</div></div><div class="card rounded-2xl p-4"><div class="text-2xl font-black">PKR</div><div class="text-xs muted">Currency</div></div></div></div>
+</section>
+<section id="install" class="max-w-7xl mx-auto px-4 py-6"><div class="card rounded-3xl p-6 md:p-8"><div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5"><div><div class="text-xs gold font-bold uppercase tracking-wider">PakThai Tech App</div><h2 class="text-2xl md:text-3xl font-black mt-2">Install PakThai Tech on your device</h2><p class="muted mt-2 max-w-2xl">Android اور PC پر Install App استعمال کریں۔ iPhone پر Share → Add to Home Screen کریں۔ انسٹال ہونے کے بعد یہی PakThai Tech catalog اور تمام features app کی طرح کھلیں گے۔</p></div><button id="installMainBtn" class="btn rounded-xl px-5 py-3" type="button">📱 Install / Mobile App</button></div></div></section>
+<section id="shopCategories" class="max-w-7xl mx-auto px-4 pt-8 pb-2"><div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2"><div><div class="text-xs gold font-bold uppercase tracking-wider">Shop by category</div><h2 class="text-2xl md:text-3xl font-black mt-1">Find your next upgrade</h2><p class="muted text-sm mt-1">Choose a category to narrow the live catalog.</p></div><a href="#products" class="text-sm font-bold gold">View all products ↓</a></div><div id="categoryTiles" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 mt-5"></div></section>
+<section id="products" class="max-w-7xl mx-auto px-4 py-8">
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4"><div><h2 class="text-3xl font-black">Products</h2><p class="muted mt-1">Live catalog • prices shown in PKR</p></div><input id="search" class="w-full md:w-80 bg-[#111827] border line rounded-xl px-4 py-3 outline-none focus:border-amber-500" placeholder="Search products…"></div>
+  <div id="cats" class="flex gap-2 overflow-x-auto py-5"></div>
+  <div id="grid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5"></div>
+  <div id="empty" class="hidden text-center py-20 muted">No products found.</div>
+</section>
+<!-- All customer-facing product and order interactions stay inside PakThai Tech. -->
+<div id="productModal" class="hidden fixed inset-0 z-50 bg-black/80 p-4 overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="min-h-full grid place-items-center py-8">
+    <div class="card rounded-3xl w-full max-w-4xl overflow-hidden shadow-2xl">
+      <div class="flex items-center justify-between px-5 py-4 border-b line">
+        <div class="text-sm font-bold gold">PakThai Tech • Product Details</div>
+        <button data-action="close-product" class="pill rounded-lg px-3 py-1.5 text-sm">Close ✕</button>
+      </div>
+      <div id="modalBody" class="p-5 md:p-7"></div>
+    </div>
+  </div>
+</div>
+<div id="orderModal" class="hidden fixed inset-0 z-[60] bg-black/80 p-4 overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="orderTitle">
+  <div class="min-h-full grid place-items-center py-8">
+    <div class="card rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl">
+      <div class="flex items-center justify-between px-5 py-4 border-b line">
+        <div class="text-sm font-bold gold">PakThai Tech • Order Request</div>
+        <button data-action="close-order" class="pill rounded-lg px-3 py-1.5 text-sm">Close ✕</button>
+      </div>
+      <form id="orderForm" class="p-5 md:p-7 space-y-4"><input id="orderWebsite" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden">
+        <div>
+          <div id="orderTitle" class="text-xl font-black"></div>
+          <div id="orderPrice" class="gold font-bold mt-1"></div>
+          <div id="orderStock" class="text-xs muted mt-1"></div>
+        </div>
+        <input id="orderName" required class="w-full bg-[#111827] border line rounded-xl px-4 py-3 outline-none focus:border-amber-500" placeholder="Your name">
+        <input id="orderContact" required class="w-full bg-[#111827] border line rounded-xl px-4 py-3 outline-none focus:border-amber-500" placeholder="Phone / WhatsApp">
+        <input id="orderQty" type="number" min="1" value="1" required class="w-full bg-[#111827] border line rounded-xl px-4 py-3 outline-none focus:border-amber-500" placeholder="Quantity">
+        <textarea id="orderNote" rows="3" class="w-full bg-[#111827] border line rounded-xl px-4 py-3 outline-none focus:border-amber-500" placeholder="Optional note"></textarea>
+        <div class="flex gap-3">
+          <button class="btn rounded-xl px-5 py-3" type="submit">Submit Request</button>
+          <button class="pill rounded-xl px-5 py-3" type="button" data-action="close-order">Back</button>
+        </div>
+        <div id="orderResult" class="hidden rounded-xl border line p-4 text-sm"></div>
+      </form>
+    </div>
+  </div>
+</div>
+<section id="builder" class="max-w-7xl mx-auto px-4 py-12"><div class="card rounded-3xl p-6 md:p-8"><h2 class="text-3xl font-black">PC Builder</h2><p class="muted mt-1">Choose live catalog parts and calculate an estimated build price.</p><div class="grid md:grid-cols-2 gap-4 mt-6" id="builderFields"></div><div class="mt-6 flex flex-wrap gap-4 items-center"><div><div class="text-xs muted">Estimated total</div><div class="text-3xl font-black gold" id="total">PKR 0</div></div><button id="quote" class="btn rounded-xl px-5 py-3">Request Quote</button></div></div></section>
+<section id="connect" class="max-w-7xl mx-auto px-4 py-8">
+  <div class="card rounded-3xl p-6 md:p-8">
+    <h2 class="text-3xl font-black">Connect with PakThai Tech</h2>
+    <p class="muted mt-2">Official customer-facing channels. TikTok and X are intentionally not included for now.</p>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mt-6">
+      <a class="social-link pill rounded-xl px-3 py-3" target="_blank" rel="noopener noreferrer" href="https://www.facebook.com/share/1FFz34xn23/?mibextid=wwXIfr"><span class="social-icon facebook">f</span><span><strong>Facebook</strong><small>Official page</small></span><span class="social-arrow">↗</span></a>
+      <a class="social-link pill rounded-xl px-3 py-3" target="_blank" rel="noopener noreferrer" href="https://www.facebook.com/share/1GTBrPzmNX/?mibextid=wwXIfr"><span class="social-icon facebook">f</span><span><strong>Facebook 2</strong><small>More updates</small></span><span class="social-arrow">↗</span></a>
+      <a class="social-link pill rounded-xl px-3 py-3" target="_blank" rel="noopener noreferrer" href="https://www.facebook.com/share/g/1CeFKVJjLh/?mibextid=wwXIfr"><span class="social-icon facebook">f</span><span><strong>Facebook Group</strong><small>Community</small></span><span class="social-arrow">↗</span></a>
+      <a class="social-link pill rounded-xl px-3 py-3" target="_blank" rel="noopener noreferrer" href="https://www.instagram.com/pakthai.tech"><span class="social-icon instagram">◎</span><span><strong>Instagram</strong><small>@pakthai.tech</small></span><span class="social-arrow">↗</span></a>
+      <a class="social-link pill rounded-xl px-3 py-3" target="_blank" rel="noopener noreferrer" href="https://www.threads.com/@pakthai.tech"><span class="social-icon threads">@</span><span><strong>Threads</strong><small>@pakthai.tech</small></span><span class="social-arrow">↗</span></a>
+      <a class="social-link pill rounded-xl px-3 py-3" target="_blank" rel="noopener noreferrer" href="https://youtube.com/@pakthaitech"><span class="social-icon youtube">▶</span><span><strong>YouTube</strong><small>Videos & guides</small></span><span class="social-arrow">↗</span></a>
+      <a class="social-link pill rounded-xl px-3 py-3" target="_blank" rel="noopener noreferrer" href="https://wa.me/923007982289"><span class="social-icon whatsapp" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.52 3.48A11.86 11.86 0 0 0 12.08 0C5.52 0 .18 5.33.18 11.9c0 2.1.55 4.15 1.6 5.96L.08 24l6.3-1.65a11.9 11.9 0 0 0 5.69 1.45h.01c6.56 0 11.9-5.34 11.9-11.9a11.82 11.82 0 0 0-3.46-8.42ZM12.08 21.8a9.9 9.9 0 0 1-5.04-1.38l-.36-.21-3.74.98 1-3.65-.24-.38a9.87 9.87 0 1 1 8.38 4.64Zm5.42-7.4c-.3-.15-1.76-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.95 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.47-2.4-1.48-.88-.78-1.48-1.75-1.65-2.05-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.87 1.22 3.07c.15.2 2.1 3.2 5.1 4.48.71.3 1.27.49 1.7.62.71.23 1.36.2 1.87.12.57-.08 1.76-.72 2-1.42.25-.7.25-1.3.17-1.42-.07-.13-.27-.2-.57-.35Z"/></svg></span><span><strong>WhatsApp</strong><small>+92 300 7982289</small></span><span class="social-arrow">↗</span></a>
+      <a class="social-link pill rounded-xl px-3 py-3" target="_blank" rel="noopener noreferrer" href="https://line.me/ti/p/Tu3c9Q2KCU"><span class="social-icon line-icon">LINE</span><span><strong>LINE</strong><small>Chat with us</small></span><span class="social-arrow">↗</span></a>
+      <a class="social-link pill rounded-xl px-3 py-3" target="_blank" rel="noopener noreferrer" href="https://t.me/pakthaitech"><span class="social-icon telegram">➤</span><span><strong>Telegram</strong><small>@pakthaitech</small></span><span class="social-arrow">↗</span></a>
+      <a class="social-link pill rounded-xl px-3 py-3" target="_blank" rel="noopener noreferrer" href="https://s.imoim.net/noweT8"><span class="social-icon imo">•••</span><span><strong>IMO</strong><small>Message us</small></span><span class="social-arrow">↗</span></a>
+      <button class="social-link pill rounded-xl px-3 py-3 text-left" data-action="open-chat"><span class="social-icon crisp">☏</span><span><strong>Live Chat</strong><small>Chat with support</small></span><span class="social-arrow">↗</span></button>
+    </div>
+  </div>
+</section>
+<section id="payment" class="max-w-7xl mx-auto px-4 py-8 pb-16"><div class="card rounded-3xl p-6 md:p-8"><h2 class="text-3xl font-black">Payment</h2><p class="muted mt-2">For local payment, scan the official Raast QR below. For international dealers, use the business IBAN/SWIFT details.</p><div class="mt-6 grid lg:grid-cols-2 gap-5"><div class="card rounded-2xl p-5"><div class="text-sm muted">Raast / EasyPaisa</div><div class="mt-4 rounded-2xl bg-white p-4 max-w-md mx-auto"><img src="/assets/raast-easypaisa-qr.png" alt="HADAF AL BARQ Raast payment QR — Till ID 992712348" class="w-full h-auto rounded-xl"></div><div class="text-center font-bold mt-4">Till ID: 992712348</div><div class="text-sm muted text-center mt-2">Scan this QR to make the local payment.</div></div><div class="card rounded-2xl p-5"><div class="text-sm muted">International transfer</div><div class="font-bold mt-2 break-all">IBAN: PK80TMFB0000000082410776</div><div class="mt-2">SWIFT/BIC: TMFBPKKA</div><div class="text-sm muted mt-3">Bank: Telenor Microfinance Bank / Easypaisa</div></div></div></div></section>
+</main>
+<footer class="border-t line"><div class="max-w-7xl mx-auto px-4 py-8 flex flex-col md:flex-row justify-between gap-4 text-sm"><div><div class="font-extrabold">PakThai Tech</div><div class="muted mt-1">Gaming hardware • PC components • custom builds</div></div><div class="muted">© 2026 PakThai Tech</div><div class="mt-2 flex flex-wrap gap-4"><a href="/privacy-policy.html">Privacy Policy</a><a href="/data-deletion.html">Data Deletion</a><a href="/terms.html">Terms of Use</a></div></div></footer>
+<script src="/app.js" defer></script>
+
+<!-- PakThai Tech in-page Crisp chat -->
+<div id="crispModal" class="hidden fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm p-3 md:p-6">
+  <div class="mx-auto w-full max-w-5xl h-full md:h-[92vh] bg-[#0b101a] border border-slate-700 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+    <div class="flex items-center justify-between px-4 py-3 border-b border-slate-700 bg-[#101827]">
+      <div>
+        <div class="gold font-black text-sm">PAKTHAI TECH</div>
+        <div class="text-xs muted">Live Customer Support</div>
+      </div>
+      <button data-action="close-chat" class="pill rounded-lg px-3 py-2 text-sm font-bold" aria-label="Close chat">Close ✕</button>
+    </div>
+    <div class="flex-1 min-h-0 bg-white">
+      <iframe id="crispFrame" title="PakThai Tech Live Chat" style="width:100%;height:100%;border:0;display:block;" loading="lazy" allow="clipboard-write"></iframe>
+    </div>
+  </div>
+</div>
+
+<div id="pakthaiSupportDock" aria-label="PakThai Tech customer support">
+  <button type="button" class="support-fab chat-fab" data-action="open-chat" aria-label="Open PakThai Tech live chat" title="Live Chat">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.25 11.5a7.75 7.75 0 0 1-8 7.75 8.9 8.9 0 0 1-3.6-.76L4 19.75l1.2-3.42A7.5 7.5 0 0 1 4.25 11.5a7.75 7.75 0 0 1 8-7.75 7.75 7.75 0 0 1 8 7.75Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 11.5h.01M12 11.5h.01M16 11.5h.01" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+  </button>
+  <a class="support-fab whatsapp-fab" href="https://wa.me/923007982289?text=Hello%20PakThai%20Tech%2C%20I%20need%20help%20with%20your%20store." target="_blank" rel="noopener noreferrer" aria-label="Chat with PakThai Tech on WhatsApp" title="WhatsApp">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.52 3.48A11.86 11.86 0 0 0 12.08 0C5.52 0 .18 5.33.18 11.9c0 2.1.55 4.15 1.6 5.96L.08 24l6.3-1.65a11.9 11.9 0 0 0 5.69 1.45h.01c6.56 0 11.9-5.34 11.9-11.9a11.82 11.82 0 0 0-3.46-8.42ZM12.08 21.8a9.9 9.9 0 0 1-5.04-1.38l-.36-.21-3.74.98 1-3.65-.24-.38a9.87 9.87 0 1 1 8.38 4.64Zm5.42-7.4c-.3-.15-1.76-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.95 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.47-2.4-1.48-.88-.78-1.48-1.75-1.65-2.05-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.87 1.22 3.07c.15.2 2.1 3.2 5.1 4.48.71.3 1.27.49 1.7.62.71.23 1.36.2 1.87.12.57-.08 1.76-.72 2-1.42.25-.7.25-1.3.17-1.42-.07-.13-.27-.2-.57-.35Z"/></svg>
+  </a>
+</div>
+
+</body></html>
+

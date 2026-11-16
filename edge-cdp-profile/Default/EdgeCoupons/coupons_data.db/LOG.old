@@ -1,0 +1,5 @@
+2026/10/23-16:21:23.265 514 Creating DB D:\pakthai\edge-cdp-profile\Default\EdgeCoupons/coupons_data.db since it was missing.
+2026/10/23-16:21:23.347 514 Reusing MANIFEST D:\pakthai\edge-cdp-profile\Default\EdgeCoupons/coupons_data.db/MANIFEST-000001
+2026/10/23-16:21:31.196 ba4 Level-0 table #5: started
+2026/10/23-16:21:31.216 ba4 Level-0 table #5: 683284 bytes OK
+2026/10/23-16:21:31.222 ba4 Delete type=0 #3

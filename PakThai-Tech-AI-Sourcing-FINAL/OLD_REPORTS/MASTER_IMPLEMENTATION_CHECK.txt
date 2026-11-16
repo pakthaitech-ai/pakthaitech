@@ -1,0 +1,59 @@
+================= PAKTHAI MASTER IMPLEMENTATION CHECK =================
+
+[1] CURRENT WORKER
+ Volume in drive D is New Volume
+ Volume Serial Number is 68B6-55F8
+
+ Directory of D:\Horse 2\PakThai-Tech-AI-Sourcing-FINAL\src
+
+28/09/2026  12:57            65,214 worker.js
+               1 File(s)         65,214 bytes
+               0 Dir(s)  158,976,376,832 bytes free
+
+[2] BLOCKS
+968:  BLOCK 8 — PRODUCT -> SELLER / SUPPLIER MATCHING
+
+[3] OPPORTUNITY ENGINE
+154:function calcOpportunity(input) {
+221:async function buildAutomaticOpportunity(db, input) {
+514:  if (path === "/api/opportunities" && method === "GET") {
+528:  if (path === "/api/opportunities/calculate" && method === "POST") {
+534:  if (path === "/api/opportunities" && method === "POST") {
+555:      INSERT INTO opportunities
+668: const [p,s,z,o]=await Promise.all([api('/api/products'),api('/api/sellers'),api('/api/zones'),api('/api/opportunities')]);
+694: const x=await api('/api/opportunities/calculate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)});
+704: const r=await api('/api/opportunities',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)});
+
+[4] SELLER MATCHING
+970:  Uses the existing seller_offers table. No new table is created.
+1011:async function runProductSellerMatching(db, input = {}) {
+1106:      FROM seller_offers so
+1347:async function handleProductSellerMatching(request, env) {
+1392:    const result = await runProductSellerMatching(env.DB, body);
+1445:      FROM seller_offers so
+1644:        if (url.pathname.startsWith("/api/product-seller-match")) return await handleProductSellerMatching(request, env);
+
+[5] BUYER FLOW
+411:      "INSERT INTO buyer_requirements (buyer_id, product_keyword, quantity, max_budget_pkr, target_price_pkr, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, 'new', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+854:    var r=await api('/api/buyer-match/run',{method:'POST',headers:{'content-type':'application/json'},body:'{}'});
+891:    const r = await env.DB.prepare("SELECT br.*, b.name AS buyer_name FROM buyer_requirements br JOIN buyers b ON b.id=br.buyer_id ORDER BY br.id DESC").all();
+900:    const r = await env.DB.prepare("INSERT INTO buyer_requirements (buyer_id,product_keyword,quantity,max_budget_pkr,target_price_pkr,notes,status,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?)").bind(
+914:  if (u.pathname === "/api/buyer-matches" && request.method === "GET") {
+917:      "FROM buyer_matches bm " +
+926:  if (u.pathname === "/api/buyer-match/run" && request.method === "POST") {
+927:    const qs = (await env.DB.prepare("SELECT * FROM buyer_requirements WHERE status=\"active\"").all()).results || [];
+940:          "SELECT id FROM buyer_matches WHERE buyer_id=? AND requirement_id=? AND product_id=? LIMIT 1"
+946:          "INSERT INTO buyer_matches (buyer_id,requirement_id,product_id,seller_id,match_status,notes,created_at,updated_at) VALUES (?,?,?,?,?,?,datetime(\"now\"),datetime(\"now\"))"
+981:  It only assigns seller_id on buyer_matches.
+1048:      FROM buyer_matches bm
+1049:      JOIN buyer_requirements br ON br.id = bm.requirement_id
+1068:      FROM buyer_matches bm
+1069:      JOIN buyer_requirements br ON br.id = bm.requirement_id
+1304:        UPDATE buyer_matches
+1372:        FROM buyer_matches bm
+1374:        JOIN buyer_requirements br ON br.id=bm.requirement_id
+1645:        if (url.pathname.startsWith("/api/buyers") || url.pathname.startsWith("/api/buyer-requirements") || url.pathname.startsWith("/api/buyer-matches") || url.pathname.startsWith("/api/buyer-match/")) return await handleMasterBuyerApi(request, env);
+
+[6] SYNTAX
+
+================= END CHECK =================

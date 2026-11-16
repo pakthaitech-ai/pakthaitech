@@ -1,0 +1,1 @@
+const fs=require('fs');const p='D:/pakthai/patch-auto-discovery-schedule.cjs';let s=fs.readFileSync(p,'utf8');s=s.replace(/\\\\'/g,'"');fs.writeFileSync(p,s,'utf8');console.log('fixed SQL quote escaping');

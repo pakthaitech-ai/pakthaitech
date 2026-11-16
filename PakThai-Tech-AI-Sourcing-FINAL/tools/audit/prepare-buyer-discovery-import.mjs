@@ -1,0 +1,10 @@
+import { readFileSync, writeFileSync } from 'node:fs';
+const report=JSON.parse(readFileSync('./tools/audit/buyer-discovery-upgrade-2026-10-27.json','utf8'));
+const known={
+'ilink.com.pk':'i.Link Systems & Solutions','umercomputers.com':'Umer Computers & Gaming','pcbank.com.pk':'PC Bank','zahcomputers.pk':'ZAH Computers','galaxy.pk':'Galaxy Computers','czone.com.pk':'Computer Zone (Czone)','techtronics.pk':'Techtronics','electrotraders.com.pk':'Electro Traders','newtechpk.com':'New Technologies','khanbrothers.net':'Khan Brothers','mustafacomputers.pk':'Mustafa Computers','asifcomputers.com':'Asif Computers','pcstore.pk':'Pcstore.pk'};
+const esc=v=>"'"+String(v??'').replace(/[\u0000-\u001f]/g,' ').replace(/'/g,"''")+"'";
+const byHost=new Map();
+for(const x of report.prospects){let host='';try{host=new URL(x.website).hostname.toLowerCase().replace(/^www\./,'')}catch{} if(known[host]&&!byHost.has(host))byHost.set(host,x);}
+const sql=[...byHost.entries()].map(([host,x])=>`INSERT INTO buyer_prospects (place_id,discovery_query,discovery_city,review_status,first_seen_at,last_seen_at,business_name,address,website,phone,osm_type,osm_id) VALUES (${["web:"+host,"Public Pakistan computer/IT retailer website; potential wholesale/reseller buyer; exact city and buying interest unverified","Unverified (Pakistan)","unreviewed"].map(esc).join(',')},CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,${[known[host],"Pakistan; exact city/location unverified","https://"+host+"/","","web",host].map(esc).join(',')}) ON CONFLICT(place_id) DO UPDATE SET discovery_query=excluded.discovery_query,discovery_city=excluded.discovery_city,last_seen_at=CURRENT_TIMESTAMP,business_name=excluded.business_name,address=excluded.address,website=excluded.website,phone=excluded.phone,osm_type='web',osm_id=excluded.osm_id;`).join('\n');
+writeFileSync('./tools/audit/buyer-discovery-upgrade-2026-10-27-filtered.sql',sql+'\n');
+console.log(JSON.stringify({filtered_unique_official_sites:byHost.size,sites:[...byHost.keys()],sql_bytes:sql.length}));

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json.schemastore.org/wrangler.json",
+  "name": "pakthai-ai-sourcing",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-09-25",
+  "vars": {
+    "OUTBOUND_EMAIL_PROVIDER": "gmail",
+    "WHATSAPP_AUTOMATION_ENABLED": "false",
+    "VAPID_PUBLIC_KEY": "BE99XW8PVfT2WXPTuTyvxpoIaXGESeaGY84HS4pK5d0LYrq8duIOL4F8zns-DEvESIxkstP4DjY7LyhiDwDji9w",
+    "VAPID_SUBJECT": "mailto:pakthaitech@gmail.com"
+  },
+  "ai": {
+    "binding": "AI"
+  },
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true,
+      "head_sampling_rate": 1
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 0.1
+    },
+    "issues": {
+      "enabled": true
+    }
+  },
+  "triggers": {
+    "crons": [
+      "0 2 * * *",
+      "0 4 * * *",
+      "0 * * * *"
+    ]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "pakthai-sourcing-db",
+      "database_id": "a2d77cc7-c50e-40c5-91da-a129865fffa1"
+    }
+  ]
+}

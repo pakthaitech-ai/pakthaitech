@@ -1,0 +1,219 @@
+=== Seller Database (text=22) ===
+PAKTHAI TECH - AI Sourcing Engine
+PAKTHAI TECH
+AI Sourcing Engine
+Catalog sync: COMPLETE
+Signed in: Owner
+Products
+467
+Sellers
+8
+Opportunities
+0
+Click to view sourcing opportunities
+Active Zones
+3
+Dashboard data loaded.
+Seller Database
+Name
+Contact
+Country
+City
+Platform
+Seller type
+DATAITEMS=54
+ROW Name
+ROW Location
+ROW Platform
+ROW Type
+ROW Status
+ROW STARCOMM TECHNOLOGY CO., LTD.
+ROW Bangkok, Thailand
+ROW https://www.startcomtech.com
+ROW supplier
+ROW pending
+=== Small-Lot Calculator (text=25) ===
+Catalog sync: COMPLETE
+Signed in: Owner
+Products
+467
+Sellers
+8
+Opportunities
+0
+Click to view sourcing opportunities
+Active Zones
+3
+Dashboard data loaded.
+Automatic Small-Lot Opportunity
+Select a product + seller. The engine pulls Pakistan retail price and D1 cost settings automatically. Only quantity, seller asking price and distance need to be supplied for a fresh quote.
+Product
+Seller
+Quantity
+Seller asking price / unit (PKR)
+Pakistan retail / unit (auto)
+Target margin % (auto setting)
+Distance to seller (km)
+Cost Controls - ON/OFF
+DATAITEMS=0
+=== Seller History (text=16) ===
+PAKTHAI TECH - AI Sourcing Engine
+PAKTHAI TECH
+AI Sourcing Engine
+Catalog sync: COMPLETE
+Signed in: Owner
+Products
+467
+Sellers
+8
+Opportunities
+0
+Click to view sourcing opportunities
+Active Zones
+3
+Dashboard data loaded.
+Seller History
+DATAITEMS=7
+ROW Seller
+ROW Product
+ROW Qty
+ROW Asking
+ROW Agreed
+ROW Outcome
+=== Sourcing Opportunities (text=18) ===
+PAKTHAI TECH - AI Sourcing Engine
+PAKTHAI TECH
+AI Sourcing Engine
+Catalog sync: COMPLETE
+Signed in: Owner
+Products
+467
+Sellers
+8
+Opportunities
+0
+Click to view sourcing opportunities
+Active Zones
+3
+Dashboard data loaded.
+Sourcing Opportunities
+All created sourcing opportunities are listed below. Owner approval remains pending until approved.
+No sourcing opportunities have been created yet.
+DATAITEMS=0
+=== Pakistan Buyer Center (text=25) ===
+Catalog sync: COMPLETE
+Signed in: Owner
+Products
+467
+Sellers
+8
+Opportunities
+0
+Click to view sourcing opportunities
+Active Zones
+3
+Dashboard data loaded.
+Pakistan Buyer Center
+Pakistan buyers, requirements and automatic product matching.
+Add Pakistan Buyer
+Buyer Requirement
+Automatic Matching
+System will match buyer requirements with PakThai Tech products.
+Pakistan Buyers
+No Pakistan buyers yet.
+Buyer Requirements
+No buyer requirements yet.
+DATAITEMS=0
+=== Buyer Discovery (text=42) ===
+Business types
+Loading prospects...
+Thailand Market - Bangkok
+Free public map search. Separate potential buyers and sellers; results need owner verification.
+Thailand sellers: latest run OK - 10 results returned; 119 total unverified prospect(s) stored as of 28/10/2026, 07:00:50 Thailand buyers: latest run OK - 5 results returned; 101 total unverified prospect(s) stored as of 28/10/2026, 09:00:44
+Thailand seller prospects
+Thailand buyer prospects
+South Korea Market - Pyeongtaek search area
+Free public map search within an initial 30 km of Pyeongtaek city centre. Seller and buyer leads are unverified; expand the area after local coverage is reviewed.
+Korea sellers: latest run OK - 1 results returned; 11 total unverified prospect(s) stored as of 28/10/2026, 08:00:50 Korea buyers: latest run OK - 4 results returned; 97 total unverified prospect(s) stored as of 28/10/2026, 10:00:48
+Korea seller prospects
+Korea buyer prospects
+Market Deal Pipeline - Draft Only
+Qualified leads can become internal deal drafts. THB/KRW prices, exchange rates, export costs and delivery are not configured here; prepare no customer quote until those are verified and owner-approved.
+Market
+Trade direction
+Qualified prospect
+Product / requirement
+Quantity
+Owner notes
+Thailand & Korea deal drafts
+No internal market deal drafts yet.
+DATAITEMS=2324
+ROW Business
+ROW Evidence score
+ROW Source
+ROW Review
+ROW Notes
+ROW Save / Seller link
+ROW Wilcon Distribution Co., Ltd.
+ROW 30/100 Evidence priority
+ROW Public company-site fallback; IT equipment and networking distribution; export, stock and terms require verification. Bangkok presence and supplier status require owner verification. www.wcdt.co.th
+ROW Unreviewed
+=== Sourcing Partners (text=23) ===
+PAKTHAI TECH
+AI Sourcing Engine
+Catalog sync: COMPLETE
+Signed in: Owner
+Products
+467
+Sellers
+8
+Opportunities
+0
+Click to view sourcing opportunities
+Active Zones
+3
+Dashboard data loaded.
+Sourcing Partner Management
+Owner-only. External messages are not sent automatically.
+Name
+Country code
+Country name
+Contact
+Email
+Lead type
+DATAITEMS=21
+ROW Name
+ROW Country
+ROW Lead type
+ROW Contact
+ROW Status
+ROW Action
+ROW M Nadeem
+ROW South Korea (KR)
+ROW all
+ROW +821068879265
+=== Voice Assistant (text=21) ===
+PAKTHAI TECH - AI Sourcing Engine
+PAKTHAI TECH
+AI Sourcing Engine
+Catalog sync: COMPLETE
+Signed in: Owner
+Products
+467
+Sellers
+8
+Opportunities
+0
+Click to view sourcing opportunities
+Active Zones
+3
+Dashboard data loaded.
+PakThai Voice & Quick Status
+Read-only assistant. Use the microphone where supported, or type a command. It will not approve orders, change settings, or send messages.
+Type a command
+Assistant result
+Ready. Try "system status", "catalog sync status", or "pending approvals".
+Voice input available in this browser. Typed commands also work.
+DATAITEMS=0
+
+FOLLOW-UP: Buyer Discovery initially showed Loading prospects after 2.4 seconds, but after 10 seconds status changed to Ready: Free OpenStreetMap search. Owner-only /api/buyer-prospects returned unreviewed prospect records. This was delayed rendering, not missing data.

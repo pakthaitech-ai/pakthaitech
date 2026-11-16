@@ -1,0 +1,11 @@
+import { writeFileSync } from "node:fs";
+import { runScheduledSellerDiscovery } from "../../src/seller-discovery.js";
+const inserts=[];
+const db={prepare(sql){return {bind(...params){return {async run(){if(sql.includes("INSERT INTO external_prospects"))inserts.push({sql,params});return {meta:{changes:1}};}};},async run(){return {meta:{changes:0}};}};}};
+const result=await runScheduledSellerDiscovery(db);
+const rows=inserts.map(x=>({source_engine:x.params[0],title:x.params[1],url:x.params[2],domain:x.params[3],snippet:x.params[4],search_query:x.params[5]}));
+const sqlValue=v=>"'"+String(v??"").replace(/[\u0000-\u001f]/g," ").replace(/'/g,"''")+"'";
+const sql=rows.map(x=>"INSERT INTO external_prospects (prospect_type,source_engine,title,url,domain,snippet,search_query,review_status,first_seen_at,last_seen_at) VALUES ('seller',"+[x.source_engine,x.title,x.url,x.domain,x.snippet,x.search_query].map(sqlValue).join(",")+",'unreviewed',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP) ON CONFLICT(url) DO UPDATE SET title=excluded.title,domain=excluded.domain,snippet=excluded.snippet,search_query=excluded.search_query,last_seen_at=CURRENT_TIMESTAMP;").join("\n");
+writeFileSync(new URL("./seller-prospects-live-2026-10-11.json",import.meta.url),JSON.stringify({result,prospects:rows},null,2));
+if(sql)writeFileSync(new URL("./seller-prospects-live-2026-10-11.sql",import.meta.url),sql);
+console.log(JSON.stringify({result,prospects:rows},null,2));

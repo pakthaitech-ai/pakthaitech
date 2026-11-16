@@ -1,0 +1,1 @@
+const fs=require('node:fs'); const p='D:/pakthai/PakThai-Tech-AI-SOURCING-FINAL/src/worker.js'; const a=fs.readFileSync(p,'utf8').split('\n'); for(let i=0;i<a.length;i++){if(/[�Ãâ]|A,A�|A��|0A��/.test(a[i])) console.log((i+1)+': '+JSON.stringify(a[i].slice(0,360)));}

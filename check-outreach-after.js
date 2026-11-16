@@ -1,0 +1,3 @@
+const ws = new WebSocket('ws://127.0.0.1:9222/devtools/page/C03B0A8FC9ADDCE697362F1287DF8212');
+ws.onopen=()=>ws.send(JSON.stringify({id:1,method:'Runtime.evaluate',params:{expression:"(async()=>{const r=await fetch('/api/outreach/status',{credentials:'same-origin',cache:'no-store'});const j=await r.json();return JSON.stringify({http:r.status,last_run:j.last_run,campaigns:(j.campaigns||[]).map(c=>({id:c.id,company:c.company_name,status:c.status,touch_count:c.touch_count,last_sent_at:c.last_sent_at,last_error:c.last_error}))})})()",awaitPromise:true,returnByValue:true}}));
+ws.onmessage=e=>{console.log(e.data);ws.close()};

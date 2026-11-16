@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PakThai Tech — Gaming Hardware & PC Store</title>
+<meta name="description" content="PakThai Tech — Gaming PCs, graphics cards, processors, storage and PC components.">
+<meta property="og:title" content="PakThai Tech — Gaming Hardware & PC Store">
+<meta property="og:description" content="PakThai Tech — Gaming PCs, graphics cards, processors, storage and PC components.">
+<meta property="og:image" content="/assets/pakthai-tech-brand-cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="PakThai Tech — Gaming Hardware & PC Store">
+<meta name="twitter:image" content="/assets/pakthai-tech-brand-cover.png">
+<meta name="theme-color" content="#0a0e17">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PakThai Tech">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="manifest" href="/manifest.webmanifest">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{font-family:Inter,sans-serif;background:#0a0e17;color:#e5e7eb}.card{background:#131a29;border:1px solid #202b3f}.gold{color:#f59e0b}.btn{background:#f59e0b;color:#111827;font-weight:800}.btn:hover{filter:brightness(1.08)}.muted{color:#94a3b8}.pill{border:1px solid #26344b;background:#111827}.pill.active{background:#f59e0b;color:#111827;border-color:#f59e0b}.line{border-color:#202b3f}.skeleton{background:linear-gradient(90deg,#131a29 25%,#1b2537 50%,#131a29 75%);background-size:200% 100%;animation:sh 1.3s infinite}@keyframes sh{to{background-position:-200% 0}}
+#pakthaiSupportDock{position:fixed;right:18px;bottom:18px;z-index:80;display:flex;flex-direction:column;gap:12px}
+.support-fab{width:58px;height:58px;border-radius:9999px;display:grid;place-items:center;color:#fff;border:2px solid rgba(255,255,255,.92);box-shadow:0 8px 26px rgba(0,0,0,.42);transition:transform .15s ease,box-shadow .15s ease}
+.support-fab:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,0,0,.5)}
+.support-fab:focus-visible{outline:3px solid #f5c35a;outline-offset:3px}
+.support-fab svg{width:28px;height:28px;display:block}
+.whatsapp-fab{background:#20c96b}.chat-fab{background:#2563eb}
+@media(max-width:480px){#pakthaiSupportDock{right:12px;bottom:12px;gap:10px}.support-fab{width:52px;height:52px}}
+@media(prefers-reduced-motion:reduce){.support-fab{transition:none}}
+</style>
+
+</head>
+<body>
+<header class="sticky top-0 z-40 bg-[#0a0e17]/95 backdrop-blur border-b line">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
+    <a href="/" class="flex items-center gap-3" aria-label="PakThai Tech home"><img src="/icon.svg" alt="PakThai Tech logo" class="w-11 h-11 rounded-xl" width="44" height="44"><div><div class="font-extrabold text-lg">PakThai Tech</div><div class="text-xs muted">Gaming • PC • Components</div></div></a>
+    <nav class="hidden md:flex gap-6 text-sm font-semibold"><a href="#products" class="hover:text-amber-400">Products</a><a href="#builder" class="hover:text-amber-400">PC Builder</a><a href="#payment" class="hover:text-amber-400">Payment</a><a href="#connect" class="hover:text-amber-400">Connect</a><button onclick="openChat()" class="hover:text-amber-400">Live Chat</button></nav>
+    <div class="flex items-center gap-2"><button id="installBtn" class="pill rounded-xl px-3 py-2 text-sm hidden" type="button">📱 Install App</button><a href="#products" class="btn rounded-xl px-4 py-2 text-sm">Shop Now</a></div>
+  </div>
+</header>
+<main>
+<section class="max-w-7xl mx-auto px-4 pt-5">
+  <div class="overflow-hidden rounded-3xl border border-[#202b3f] shadow-2xl bg-[#0b1220]">
+    <img src="/assets/pakthai-tech-brand-cover.png" alt="PakThai Tech" class="w-full h-auto block" loading="eager" fetchpriority="high">
+  </div>
+</section>
+<section class="max-w-7xl mx-auto px-4 pt-14 pb-10 grid lg:grid-cols-2 gap-10 items-center">
+  <div><div class="inline-flex pill rounded-full px-3 py-1 text-xs mb-4">PAKTHAI TECH • LIVE CATALOG</div><h1 class="text-4xl md:text-6xl font-black leading-tight">Gaming hardware,<br><span class="gold">PakThai Tech</span> style.</h1><p class="muted mt-5 max-w-xl">Browse the live product catalog with current prices and product images. The catalog is synchronized from your store source so new products and price changes can appear automatically.</p><div class="mt-7 flex gap-3 flex-wrap"><a href="#products" class="btn rounded-xl px-5 py-3">Browse Products</a><a href="#builder" class="pill rounded-xl px-5 py-3">Build a PC</a><button id="heroInstallBtn" class="pill rounded-xl px-5 py-3" type="button">📱 Mobile App</button></div></div>
+  <div class="card rounded-3xl p-6"><div class="text-sm muted">Live catalog status</div><div id="status" class="mt-2 text-xl font-bold">Connecting…</div><div class="grid grid-cols-3 gap-3 mt-6"><div class="card rounded-2xl p-4"><div class="text-2xl font-black" id="count">—</div><div class="text-xs muted">Products</div></div><div class="card rounded-2xl p-4"><div class="text-2xl font-black" id="stock">—</div><div class="text-xs muted">In stock</div></div><div class="card rounded-2xl p-4"><div class="text-2xl font-black">PKR</div><div class="text-xs muted">Currency</div></div></div></div>
+</section>
+<section id="install" class="max-w-7xl mx-auto px-4 py-6"><div class="card rounded-3xl p-6 md:p-8"><div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5"><div><div class="text-xs gold font-bold uppercase tracking-wider">PakThai Tech App</div><h2 class="text-2xl md:text-3xl font-black mt-2">Install PakThai Tech on your device</h2><p class="muted mt-2 max-w-2xl">Android اور PC پر Install App استعمال کریں۔ iPhone پر Share → Add to Home Screen کریں۔ انسٹال ہونے کے بعد یہی PakThai Tech catalog اور تمام features app کی طرح کھلیں گے۔</p></div><button id="installMainBtn" class="btn rounded-xl px-5 py-3" type="button">📱 Install / Mobile App</button></div></div></section>
+<section id="products" class="max-w-7xl mx-auto px-4 py-8">
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4"><div><h2 class="text-3xl font-black">Products</h2><p class="muted mt-1">Live catalog • prices shown in PKR</p></div><input id="search" class="w-full md:w-80 bg-[#111827] border line rounded-xl px-4 py-3 outline-none focus:border-amber-500" placeholder="Search products…"></div>
+  <div id="cats" class="flex gap-2 overflow-x-auto py-5"></div>
+  <div id="grid" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
+  <div id="empty" class="hidden text-center py-20 muted">No products found.</div>
+</section>
+<!-- All customer-facing product and order interactions stay inside PakThai Tech. -->
+<div id="productModal" class="hidden fixed inset-0 z-50 bg-black/80 p-4 overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="min-h-full grid place-items-center py-8">
+    <div class="card rounded-3xl w-full max-w-4xl overflow-hidden shadow-2xl">
+      <div class="flex items-center justify-between px-5 py-4 border-b line">
+        <div class="text-sm font-bold gold">PakThai Tech • Product Details</div>
+        <button onclick="closeProduct()" class="pill rounded-lg px-3 py-1.5 text-sm">Close ✕</button>
+      </div>
+      <div id="modalBody" class="p-5 md:p-7"></div>
+    </div>
+  </div>
+</div>
+<div id="orderModal" class="hidden fixed inset-0 z-[60] bg-black/80 p-4 overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="orderTitle">
+  <div class="min-h-full grid place-items-center py-8">
+    <div class="card rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl">
+      <div class="flex items-center justify-between px-5 py-4 border-b line">
+        <div class="text-sm font-bold gold">PakThai Tech • Order Request</div>
+        <button onclick="closeOrder()" class="pill rounded-lg px-3 py-1.5 text-sm">Close ✕</button>
+      </div>
+      <form id="orderForm" class="p-5 md:p-7 space-y-4">
+        <div>
+          <div id="orderTitle" class="text-xl font-black"></div>
+          <div id="orderPrice" class="gold font-bold mt-1"></div>
+          <div id="orderStock" class="text-xs muted mt-1"></div>
+        </div>
+        <input id="orderName" required class="w-full bg-[#111827] border line rounded-xl px-4 py-3 outline-none focus:border-amber-500" placeholder="Your name">
+        <input id="orderContact" required class="w-full bg-[#111827] border line rounded-xl px-4 py-3 outline-none focus:border-amber-500" placeholder="Phone / WhatsApp">
+        <input id="orderQty" type="number" min="1" value="1" required class="w-full bg-[#111827] border line rounded-xl px-4 py-3 outline-none focus:border-amber-500" placeholder="Quantity">
+        <textarea id="orderNote" rows="3" class="w-full bg-[#111827] border line rounded-xl px-4 py-3 outline-none focus:border-amber-500" placeholder="Optional note"></textarea>
+        <div class="flex gap-3">
+          <button class="btn rounded-xl px-5 py-3" type="submit">Submit Request</button>
+          <button class="pill rounded-xl px-5 py-3" type="button" onclick="closeOrder()">Back</button>
+        </div>
+        <div id="orderResult" class="hidden rounded-xl border line p-4 text-sm"></div>
+      </form>
+    </div>
+  </div>
+</div>
+<section id="builder" class="max-w-7xl mx-auto px-4 py-12"><div class="card rounded-3xl p-6 md:p-8"><h2 class="text-3xl font-black">PC Builder</h2><p class="muted mt-1">Choose live catalog parts and calculate an estimated build price.</p><div class="grid md:grid-cols-2 gap-4 mt-6" id="builderFields"></div><div class="mt-6 flex flex-wrap gap-4 items-center"><div><div class="text-xs muted">Estimated total</div><div class="text-3xl font-black gold" id="total">PKR 0</div></div><button id="quote" class="btn rounded-xl px-5 py-3">Request Quote</button></div></div></section>
+<section id="connect" class="max-w-7xl mx-auto px-4 py-8">
+  <div class="card rounded-3xl p-6 md:p-8">
+    <h2 class="text-3xl font-black">Connect with PakThai Tech</h2>
+    <p class="muted mt-2">Official customer-facing channels. TikTok and X are intentionally not included for now.</p>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-6">
+      <a class="pill rounded-xl px-4 py-3" target="_blank" rel="noopener" href="https://www.facebook.com/share/1FFz34xn23/?mibextid=wwXIfr">Facebook</a>
+      <a class="pill rounded-xl px-4 py-3" target="_blank" rel="noopener" href="https://www.facebook.com/share/1GTBrPzmNX/?mibextid=wwXIfr">Facebook 2</a>
+      <a class="pill rounded-xl px-4 py-3" target="_blank" rel="noopener" href="https://www.facebook.com/share/g/1CeFKVJjLh/?mibextid=wwXIfr">Facebook Group</a>
+      <a class="pill rounded-xl px-4 py-3" target="_blank" rel="noopener" href="https://www.instagram.com/pakthai.tech">Instagram</a>
+      <a class="pill rounded-xl px-4 py-3" target="_blank" rel="noopener" href="https://www.threads.com/@pakthai.tech">Threads</a>
+      <a class="pill rounded-xl px-4 py-3" target="_blank" rel="noopener" href="https://youtube.com/@pakthaitech">YouTube</a>
+      <a class="pill rounded-xl px-4 py-3" target="_blank" rel="noopener" href="https://wa.me/923007982289">WhatsApp</a>
+      <a class="pill rounded-xl px-4 py-3" target="_blank" rel="noopener" href="https://line.me/ti/p/Tu3c9Q2KCU">LINE</a>
+      <a class="pill rounded-xl px-4 py-3" target="_blank" rel="noopener" href="https://t.me/pakthaitech">Telegram</a>
+      <a class="pill rounded-xl px-4 py-3" target="_blank" rel="noopener" href="https://s.imoim.net/noweT8">IMO</a>
+      <button class="pill rounded-xl px-4 py-3 text-left" onclick="openChat()">Crisp Live Chat</button>
+    </div>
+  </div>
+</section>
+<section id="payment" class="max-w-7xl mx-auto px-4 py-8 pb-16"><div class="card rounded-3xl p-6 md:p-8"><h2 class="text-3xl font-black">Payment</h2><p class="muted mt-2">For local payment, scan the official Raast QR below. For international dealers, use the business IBAN/SWIFT details.</p><div class="mt-6 grid lg:grid-cols-2 gap-5"><div class="card rounded-2xl p-5"><div class="text-sm muted">Raast / EasyPaisa</div><div class="mt-4 rounded-2xl bg-white p-4 max-w-md mx-auto"><img src="/assets/raast-easypaisa-qr.png" alt="HADAF AL BARQ Raast payment QR — Till ID 992712348" class="w-full h-auto rounded-xl"></div><div class="text-center font-bold mt-4">Till ID: 992712348</div><div class="text-sm muted text-center mt-2">Scan this QR to make the local payment.</div></div><div class="card rounded-2xl p-5"><div class="text-sm muted">International transfer</div><div class="font-bold mt-2 break-all">IBAN: PK80TMFB0000000082410776</div><div class="mt-2">SWIFT/BIC: TMFBPKKA</div><div class="text-sm muted mt-3">Bank: Telenor Microfinance Bank / Easypaisa</div></div></div></div></section>
+</main>
+<footer class="border-t line"><div class="max-w-7xl mx-auto px-4 py-8 flex flex-col md:flex-row justify-between gap-4 text-sm"><div><div class="font-extrabold">PakThai Tech</div><div class="muted mt-1">Gaming hardware • PC components • custom builds</div></div><div class="muted">© 2026 PakThai Tech</div></div></footer>
+<script>
+const SOURCE='/catalog';
+const state={products:[],category:'All'};
+const money=n=>'PKR '+Number(n||0).toLocaleString('en-PK');
+function brandSafe(s){return String(s||'').replace(/sakoonsay\s+gaming\s+store/gi,'PakThai Tech').replace(/sakoonsay\.com/gi,'PakThai Tech').replace(/sakoonsay/gi,'PakThai Tech')} function cleanHtml(s){const d=document.createElement('div');d.innerHTML=s||'';return brandSafe(d.textContent||'')}
+function imgOf(p){return p.images?.[0]?.src || p.featured_image || ''}
+function priceOf(p){const v=p.variants?.[0]?.price ?? p.price ?? 0; return Number(v)}
+function catOf(p){const t=(p.product_type||'').toLowerCase(); const tags=(p.tags||[]).join(' ').toLowerCase(); const x=t+' '+tags+' '+(p.title||'').toLowerCase(); if(/gaming pc|gaming computer|gaming desktop|budget gaming/.test(x))return'Gaming PC';if(/gpu|graphics|rtx|gtx|radeon/.test(x))return'GPU';if(/processor|cpu|ryzen|intel core/.test(x))return'CPU';if(/motherboard|b450|b550|h61|z790/.test(x))return'Motherboard';if(/ram|memory|ddr3|ddr4|ddr5/.test(x))return'RAM';if(/nvme|ssd|storage|hard drive|hdd/.test(x))return'Storage';if(/case|casing/.test(x))return'Case';if(/psu|power supply/.test(x))return'PSU';if(/cooler|cooling|fan/.test(x))return'Cooling';if(/laptop/.test(x))return'Laptop';if(/desktop/.test(x))return'Gaming PC';return p.product_type||'Other'}
+function availableOf(p){return Boolean(p.available || (p.variants||[]).some(v=>v.available));}
+function stockLabel(p){return availableOf(p)?'In Stock':'Out of Stock'}
+function card(p){const im=imgOf(p), price=priceOf(p), inStock=availableOf(p);return `<article class="card rounded-2xl overflow-hidden flex flex-col"><button onclick="${escapeHtml(`openProduct(${JSON.stringify(String(p.id))})`)}" class="text-left flex flex-col flex-1 group" aria-label="View ${escapeAttr(brandSafe(p.title))}"><div class="aspect-[4/3] bg-[#0e1420] grid place-items-center relative">${im?`<img src="${escapeHtml(im)}" alt="${escapeHtml(brandSafe(p.title))}" class="w-full h-full object-contain p-3 group-hover:scale-[1.02] transition-transform" loading="lazy">`:'<div class="muted">No image</div>'}<span class="absolute top-3 right-3 ${inStock?'bg-emerald-500/90':'bg-slate-700/90'} text-slate-950 text-[10px] font-black px-2 py-1 rounded">${stockLabel(p)}</span></div><div class="p-4 flex flex-col flex-1"><div class="text-xs gold font-bold">${escapeHtml(catOf(p))}</div><h3 class="font-bold mt-2 line-clamp-2 group-hover:text-amber-400">${escapeHtml(brandSafe(p.title))}</h3><div class="text-xl font-black mt-3">${money(price)}</div><div class="mt-auto pt-4 text-sm font-bold gold">View details →</div></div></button><div class="px-4 pb-4"><button onclick="quoteProduct('${escapeAttr(p.title)}',${price})" class="btn rounded-lg px-3 py-2 text-sm w-full">Order / Quote</button></div></article>`}
+function escapeHtml(s){return String(s||'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function escapeAttr(s){return escapeHtml(s).replace(/`/g,'')}
+function relatedProducts(p){const c=catOf(p), words=(p.title||'').toLowerCase().split(/[^a-z0-9]+/).filter(w=>w.length>2); return state.products.filter(x=>String(x.id)!==String(p.id)&&catOf(x)===c).map(x=>{let score=0; const xt=(x.title||'').toLowerCase(); words.forEach(w=>{if(xt.includes(w))score+=1}); return {x,score}}).sort((a,b)=>b.score-a.score||String(a.x.title).localeCompare(String(b.x.title))).map(o=>o.x)}
+const CRISP_DIRECT_CHAT = "https://go.crisp.chat/chat/embed/?website_id=5787d483-b0e3-4627-b50d-5e6c9ae5b86b&locale=en";
+function openChat(){
+  const modal=document.getElementById('crispModal');
+  const frame=document.getElementById('crispFrame');
+  if(!modal||!frame)return;
+  if(!frame.src) frame.src=CRISP_DIRECT_CHAT;
+  modal.classList.remove('hidden');
+  document.body.classList.add('overflow-hidden');
+}
+function closeChat(){
+  const modal=document.getElementById('crispModal');
+  if(!modal)return;
+  modal.classList.add('hidden');
+  document.body.classList.remove('overflow-hidden');
+}
+function openProduct(id){const p=state.products.find(x=>String(x.id)===String(id));if(!p)return;const im=imgOf(p), price=priceOf(p), inStock=availableOf(p);const desc=cleanHtml(p.body_html||p.description||'Product details available on request.');const tags=Array.isArray(p.tags)?p.tags:[];document.getElementById('modalBody').innerHTML=`<div class="grid md:grid-cols-2 gap-7"><div><div class="aspect-square bg-[#0e1420] rounded-2xl grid place-items-center overflow-hidden">${im?`<img src="${escapeHtml(im)}" alt="${escapeHtml(p.title)}" class="w-full h-full object-contain p-4">`:'<div class="muted">No image</div>'}</div></div><div><div class="text-xs gold font-bold uppercase tracking-wider">${escapeHtml(catOf(p))}</div><h2 id="modalTitle" class="text-2xl md:text-3xl font-black mt-2">${escapeHtml(brandSafe(p.title))}</h2><div class="text-2xl font-black gold mt-4">${money(price)}</div><div class="mt-3 inline-flex ${inStock?'bg-emerald-500/15 text-emerald-300 border-emerald-500/30':'bg-slate-700/40 text-slate-300 border-slate-600'} border rounded-lg px-3 py-1 text-xs font-bold">${stockLabel(p)}</div><div class="mt-6 text-sm muted leading-7">${escapeHtml(desc).replace(/\n/g,'<br>')}</div>${tags.length?`<div class="mt-5 flex flex-wrap gap-2">${tags.slice(0,12).map(t=>`<span class="pill rounded-full px-3 py-1 text-xs">${escapeHtml(t)}</span>`).join('')}</div>`:''}<div class="mt-7 flex gap-3 flex-wrap"><button onclick="quoteProduct('${escapeAttr(p.title)}',${price})" class="btn rounded-xl px-5 py-3">Order / Quote</button><button onclick="openChat()" class="pill rounded-xl px-5 py-3">Live Chat</button><button onclick="closeProduct()" class="pill rounded-xl px-5 py-3">Back to Products</button></div></div></div><div class="mt-8 border-t line pt-6"><h3 class="text-xl font-black">Related Products / More Options</h3><p class="muted text-sm mt-1">All available products in this category, including older and newer generations, variants and nearby choices from the live catalog.</p><div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 max-h-[70vh] overflow-y-auto pr-1">${relatedProducts(p).map(x=>`<button onclick="${escapeHtml(`openProduct(${JSON.stringify(String(x.id))})`)}" class="card rounded-2xl p-4 text-left hover:border-amber-400 transition"><div class="text-xs gold font-bold">${escapeHtml(catOf(x))}</div><div class="font-bold mt-1 line-clamp-2">${escapeHtml(x.title)}</div><div class="gold font-black mt-2">${money(priceOf(x))}</div><div class="text-xs muted mt-1">${stockLabel(x)}</div></button>`).join('')}</div></div>`;document.getElementById('productModal').classList.remove('hidden');document.body.classList.add('overflow-hidden');history.replaceState(null,'',location.pathname+'#product-'+encodeURIComponent(String(p.handle||p.id)));}
+function closeProduct(){document.getElementById('productModal').classList.add('hidden');document.body.classList.remove('overflow-hidden');history.replaceState(null,'',location.pathname+location.search);}
+
+function render(){const q=document.getElementById('search').value.toLowerCase();let arr=state.products.filter(p=>(state.category==='All'||catOf(p)===state.category)&&((p.title||'').toLowerCase().includes(q)||(p.vendor||'').toLowerCase().includes(q)));document.getElementById('grid').innerHTML=arr.map(card).join('');document.getElementById('empty').classList.toggle('hidden',arr.length>0);}
+function cats(){const names=['All',...new Set(state.products.map(catOf))];document.getElementById('cats').innerHTML=names.map(x=>`<button class="pill rounded-full px-4 py-2 text-sm whitespace-nowrap ${x===state.category?'active':''}" onclick="setCat('${escapeAttr(x)}')">${escapeHtml(x)}</button>`).join('')}
+function setCat(x){state.category=x;cats();render()}
+let currentOrder=null;
+function quoteProduct(name,price){
+  const safeName=brandSafe(name);
+  currentOrder={name:safeName,price};
+  document.getElementById('orderTitle').textContent=safeName;
+  document.getElementById('orderPrice').textContent=money(price);
+  const p=state.products.find(x=>x.title===name);
+  document.getElementById('orderStock').textContent=p?stockLabel(p):'';
+  document.getElementById('orderResult').classList.add('hidden');
+  document.getElementById('orderForm').reset();
+  document.getElementById('orderQty').value='1';
+  document.getElementById('orderModal').classList.remove('hidden');
+  document.body.classList.add('overflow-hidden');
+}
+function closeOrder(){
+  document.getElementById('orderModal').classList.add('hidden');
+  document.body.classList.remove('overflow-hidden');
+}
+document.getElementById('orderForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const result=document.getElementById('orderResult');
+  const qty=Number(document.getElementById('orderQty').value||1);
+  const name=document.getElementById('orderName').value.trim();
+  const contact=document.getElementById('orderContact').value.trim();
+  const note=document.getElementById('orderNote').value.trim();
+  const msg='Hello PakThai Tech! I would like to order/quote\\n\\nProduct: '+currentOrder.name+'\\nPrice: '+money(currentOrder.price)+'\\nQuantity: '+qty+'\\nName: '+name+'\\nContact: '+contact+'\\nNote: '+note;
+  result.innerHTML='<span>Sending request to PakThai Tech...</span>';
+  result.classList.remove('hidden');
+  try{
+    const payload={customer_name:name,phone:contact,whatsapp:contact,product_title:currentOrder.name,quantity:qty,requested_price_pkr:Number(currentOrder.price)||null,request_type:'order_request',customer_note:note};
+    const r=await fetch('https://pakthai-ai-sourcing.pakthaitech.workers.dev/api/customer-requests',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const data=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(data.error||'Request failed');
+    result.innerHTML='<strong>Request received.</strong><br>Owner approval has been requested.<br><a class="inline-block btn rounded-lg px-4 py-2 mt-3" target="_blank" rel="noopener" href="https://wa.me/923007982289?text='+encodeURIComponent(msg)+'">Continue on WhatsApp</a>';
+  }catch(err){
+    result.innerHTML='<strong>WhatsApp request ready.</strong><br><span class="muted">Online request could not be recorded right now.</span><br><a class="inline-block btn rounded-lg px-4 py-2 mt-3" target="_blank" rel="noopener" href="https://wa.me/923007982289?text='+encodeURIComponent(msg)+'">Send on WhatsApp</a>';
+  }
+});
+function builder(){const groups=['CPU','GPU','Motherboard','RAM','Storage','PSU','Case','Cooling'];const wrap=document.getElementById('builderFields');wrap.innerHTML=groups.map(g=>`<label class="block"><span class="text-sm muted">${g}</span><select data-group="${g}" class="w-full mt-2 bg-[#111827] border line rounded-xl px-3 py-3"><option value="">Select ${g}</option>${state.products.filter(p=>catOf(p)===g).map(p=>`<option value="${escapeAttr(p.id)}">${escapeHtml(p.title)} — ${money(priceOf(p))}</option>`).join('')}</select></label>`).join('');wrap.querySelectorAll('select').forEach(s=>s.addEventListener('change',calc));}
+function calc(){let total=0;document.querySelectorAll('#builderFields select').forEach(s=>{const p=state.products.find(x=>String(x.id)===s.value);if(p)total+=priceOf(p)});document.getElementById('total').textContent=money(total)}
+async function load(){try{const r=await fetch(SOURCE,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const data=await r.json();state.products=data.products||[];document.getElementById('status').textContent='Live catalog connected';document.getElementById('status').className='mt-2 text-xl font-bold text-emerald-400';document.getElementById('count').textContent=state.products.length;document.getElementById('stock').textContent=state.products.filter(availableOf).length;cats();render();builder();}catch(e){document.getElementById('status').textContent='Live catalog temporarily unavailable';document.getElementById('status').className='mt-2 text-xl font-bold text-rose-400';document.getElementById('grid').innerHTML='<div class="card rounded-2xl p-6 text-sm muted col-span-full">The live catalog is temporarily unavailable. Please refresh shortly.</div>';}}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeOrder();closeProduct();}});
+document.getElementById('productModal').addEventListener('click',e=>{if(e.target.id==='productModal')closeProduct();});
+let deferredInstallPrompt=null;
+const installButtons=[document.getElementById('installBtn'),document.getElementById('heroInstallBtn'),document.getElementById('installMainBtn')].filter(Boolean);
+function isIos(){return /iphone|ipad|ipod/i.test(navigator.userAgent)&&!window.MSStream}
+function isStandalone(){return window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true}
+function showInstallHelp(){
+  if(isStandalone()){alert('PakThai Tech پہلے ہی آپ کے ڈیوائس پر ایپ کی طرح انسٹال ہے۔');return;}
+  if(deferredInstallPrompt){deferredInstallPrompt.prompt();deferredInstallPrompt.userChoice.finally(()=>{deferredInstallPrompt=null;installButtons.forEach(b=>b.classList.add('hidden'));});return;}
+  if(isIos()){alert('iPhone پر: Safari میں Share بٹن دبائیں، پھر “Add to Home Screen” منتخب کریں۔');return;}
+  alert('اپنے براؤزر کے مینو میں “Install PakThai Tech” یا “Add to Home Screen” منتخب کریں۔');
+}
+installButtons.forEach(b=>b.addEventListener('click',showInstallHelp));
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstallPrompt=e;installButtons.forEach(b=>b.classList.remove('hidden'));});
+window.addEventListener('appinstalled',()=>{deferredInstallPrompt=null;installButtons.forEach(b=>b.classList.add('hidden'));});
+document.getElementById('search').addEventListener('input',render);if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});document.getElementById('quote').addEventListener('click',()=>{currentOrder={name:'Custom PC Build',price:Number(document.getElementById('total').textContent.replace(/[^0-9.]/g,''))||0};document.getElementById('orderTitle').textContent='Custom PC Build';document.getElementById('orderPrice').textContent=document.getElementById('total').textContent;document.getElementById('orderStock').textContent='Build request';document.getElementById('orderResult').classList.add('hidden');document.getElementById('orderForm').reset();document.getElementById('orderQty').value='1';document.getElementById('orderModal').classList.remove('hidden');document.body.classList.add('overflow-hidden');});load();
+</script>
+
+<!-- PakThai Tech in-page Crisp chat -->
+<div id="crispModal" class="hidden fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm p-3 md:p-6">
+  <div class="mx-auto w-full max-w-5xl h-full md:h-[92vh] bg-[#0b101a] border border-slate-700 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+    <div class="flex items-center justify-between px-4 py-3 border-b border-slate-700 bg-[#101827]">
+      <div>
+        <div class="gold font-black text-sm">PAKTHAI TECH</div>
+        <div class="text-xs muted">Live Customer Support</div>
+      </div>
+      <button onclick="closeChat()" class="pill rounded-lg px-3 py-2 text-sm font-bold" aria-label="Close chat">Close ✕</button>
+    </div>
+    <div class="flex-1 min-h-0 bg-white">
+      <iframe id="crispFrame" title="PakThai Tech Live Chat" style="width:100%;height:100%;border:0;display:block;" loading="lazy" allow="clipboard-write"></iframe>
+    </div>
+  </div>
+</div>
+
+<div id="pakthaiSupportDock" aria-label="PakThai Tech customer support">
+  <button type="button" class="support-fab chat-fab" onclick="openChat()" aria-label="Open PakThai Tech live chat" title="Live Chat">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.25 11.5a7.75 7.75 0 0 1-8 7.75 8.9 8.9 0 0 1-3.6-.76L4 19.75l1.2-3.42A7.5 7.5 0 0 1 4.25 11.5a7.75 7.75 0 0 1 8-7.75 7.75 7.75 0 0 1 8 7.75Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 11.5h.01M12 11.5h.01M16 11.5h.01" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+  </button>
+  <a class="support-fab whatsapp-fab" href="https://wa.me/923007982289?text=Hello%20PakThai%20Tech%2C%20I%20need%20help%20with%20your%20store." target="_blank" rel="noopener noreferrer" aria-label="Chat with PakThai Tech on WhatsApp" title="WhatsApp">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.52 3.48A11.86 11.86 0 0 0 12.08 0C5.52 0 .18 5.33.18 11.9c0 2.1.55 4.15 1.6 5.96L.08 24l6.3-1.65a11.9 11.9 0 0 0 5.69 1.45h.01c6.56 0 11.9-5.34 11.9-11.9a11.82 11.82 0 0 0-3.46-8.42ZM12.08 21.8a9.9 9.9 0 0 1-5.04-1.38l-.36-.21-3.74.98 1-3.65-.24-.38a9.87 9.87 0 1 1 8.38 4.64Zm5.42-7.4c-.3-.15-1.76-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.95 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.47-2.4-1.48-.88-.78-1.48-1.75-1.65-2.05-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.87 1.22 3.07c.15.2 2.1 3.2 5.1 4.48.71.3 1.27.49 1.7.62.71.23 1.36.2 1.87.12.57-.08 1.76-.72 2-1.42.25-.7.25-1.3.17-1.42-.07-.13-.27-.2-.57-.35Z"/></svg>
+  </a>
+</div>
+
+<script>
+const CRISP_DIRECT_CHAT = "https://go.crisp.chat/chat/embed/?website_id=5787d483-b0e3-4627-b50d-5e6c9ae5b86b&locale=en";
+function openChat() {
+  const modal = document.getElementById('crispModal');
+  const frame = document.getElementById('crispFrame');
+  if (!modal || !frame) return;
+  if (!frame.getAttribute('src')) frame.src = CRISP_DIRECT_CHAT;
+  modal.classList.remove('hidden');
+  document.body.classList.add('overflow-hidden');
+}
+function closeChat() {
+  const modal = document.getElementById('crispModal');
+  if (!modal) return;
+  modal.classList.add('hidden');
+  document.body.classList.remove('overflow-hidden');
+}
+document.getElementById('crispModal')?.addEventListener('click', event => {
+  if (event.target.id === 'crispModal') closeChat();
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') closeChat();
+});
+</script>
+
+</body></html>
+

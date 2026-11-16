@@ -1,0 +1,27 @@
+﻿PAKTHAI AI SOURCING — LIVE POWERSHELL AUDIT
+Checked: 2026-10-22 18:10:56 +05:00
+Production: https://pakthai-ai-sourcing.pakthaitech.workers.dev
+
+LIVE HTTP CHECKS
+/ => HTTP 200
+/api/health => {"ok":true,"service":"PAKTHAI TECH AI Sourcing Engine"}
+/api/catalog => HTTP 200; products=455
+/api/notifications/whatsapp-diagnostics => HTTP 401; The remote server returned an error: (401) Unauthorized.
+/api/notifications/whatsapp-token-diagnostics => HTTP 401; The remote server returned an error: (401) Unauthorized.
+
+CLOUDFLARE SECRET NAMES ONLY (no values read)
+WHATSAPP_ACCESS_TOKEN => True (secret name exists; value not read)
+WHATSAPP_PHONE_NUMBER_ID => True (secret name exists; value not read)
+WHATSAPP_WABA_ID => True (secret name exists; value not read)
+WHATSAPP_APP_SECRET => True (secret name exists; value not read)
+WHATSAPP_WEBHOOK_VERIFY_TOKEN_SECRET => True (secret name exists; value not read)
+
+AUTHENTICATION BOUNDARY
+/api/notifications/whatsapp-diagnostics and /api/notifications/whatsapp-token-diagnostics returned 401 from unauthenticated PowerShell HTTP calls. Need signed-in Owner dashboard session to read current Meta Graph diagnostics; do not bypass authentication. A separate direct Wrangler secret-list command confirmed all five required WhatsApp secret names exist; secret values were not read.
+
+SENDING GATE
+No outbound message sent. Last authenticated Meta diagnostic in existing audit showed CONNECTED/CLOUD_API/GREEN but code_verification_status=NOT_VERIFIED. Sending must remain paused until current authenticated Graph diagnostics report VERIFIED and webhook/opt-in checks pass.
+
+NEXT ACTION
+Use already signed-in Owner dashboard refresh control for live Meta diagnostics; fix only if the current result identifies a supported issue. Then prepare one test to the owner-provided UAE number and wait for explicit owner approval before sending.
+

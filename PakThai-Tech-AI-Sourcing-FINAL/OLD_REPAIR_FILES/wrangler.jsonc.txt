@@ -1,0 +1,46 @@
+{
+"$schema": "node_modules/wrangler/config-schema.json",
+"name": "pakthai-ai-sourcing-v2",
+"main": "src/index.ts",
+"compatibility_date": "2026-09-26",
+"compatibility_flags": [
+"global_fetch_strictly_public"
+],
+"assets": {
+"directory": "./public"
+},
+"observability": {
+"enabled": true
+},
+"upload_source_maps": true,{
+"$schema": "node_modules/wrangler/config-schema.json",
+"name": "pakthai-ai-sourcing-v2",
+"main": "src/index.ts",
+"compatibility_date": "2026-09-26",
+"compatibility_flags": [
+"global_fetch_strictly_public"
+],
+"assets": {
+"directory": "./public"
+},
+"observability": {
+"enabled": true
+},
+"upload_source_maps": true,
+"d1_databases": [
+{
+"binding": "pakthai_sourcing_v2_db",
+"database_name": "pakthai-sourcing-v2-db",
+"database_id": "54433b9d-7c17-4444-b216-c212fc8a9893"
+}
+]
+}
+
+"d1_databases": [
+{
+"binding": "pakthai_sourcing_v2_db",
+"database_name": "pakthai-sourcing-v2-db",
+"database_id": "54433b9d-7c17-4444-b216-c212fc8a9893"
+}
+]
+}

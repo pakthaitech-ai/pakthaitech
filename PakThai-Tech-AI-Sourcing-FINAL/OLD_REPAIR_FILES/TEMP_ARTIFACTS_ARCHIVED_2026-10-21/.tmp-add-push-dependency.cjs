@@ -1,0 +1,1 @@
+﻿const fs=require('fs');const p='package.json';const j=JSON.parse(fs.readFileSync(p,'utf8'));j.dependencies=j.dependencies||{};j.dependencies['@block65/webcrypto-web-push']='2.0.0';fs.writeFileSync(p,JSON.stringify(j,null,2)+'\n');console.log('Pinned worker-compatible Web Push library in package.json');

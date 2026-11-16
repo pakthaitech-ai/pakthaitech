@@ -1,0 +1,9 @@
+﻿PAKTHAI TECH MASTER SOURCE
+Master: D:\Horse 2\PakThai-Tech-AI-Sourcing-FINAL
+Generated: 2026-09-27T22:15:14
+
+OK`twrangler.jsonc
+OK`tpackage.json
+OK`tsrc\worker.js
+OK`tsrc
+SOURCE OF TRUTH: D:\Horse 2\PakThai-Tech-AI-Sourcing-FINAL\src\worker.js

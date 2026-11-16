@@ -1,0 +1,52 @@
+{
+  "result": {
+    "ok": true,
+    "ran_at": "2026-10-11T08:31:24.024Z",
+    "city": "Bangkok, Thailand",
+    "source": "OpenStreetMap/Photon",
+    "results_seen": 5,
+    "saved_or_refreshed": 5
+  },
+  "prospects": [
+    {
+      "source_engine": "photon",
+      "title": "Toci Group Computer Repair",
+      "url": "https://www.openstreetmap.org/N/13691742372",
+      "domain": "openstreetmap.org",
+      "snippet": "ถนนประชาราษฎร์ สาย 1, บางซื่อ, กรุงเทพมหานคร, กรุงเทพมหานคร, Thailand",
+      "search_query": "computer/electronics supplier, Bangkok, Thailand"
+    },
+    {
+      "source_engine": "photon",
+      "title": "The Best Mobile & Computer",
+      "url": "https://www.openstreetmap.org/W/1217747176",
+      "domain": "openstreetmap.org",
+      "snippet": "ถนนสวนพลู, สาทร, กรุงเทพมหานคร, กรุงเทพมหานคร, Thailand",
+      "search_query": "computer/electronics supplier, Bangkok, Thailand"
+    },
+    {
+      "source_engine": "photon",
+      "title": "Computer Laboratory",
+      "url": "https://www.openstreetmap.org/N/6207310422",
+      "domain": "openstreetmap.org",
+      "snippet": "ซอยพุทธบูชา 49, ทุ่งครุ, กรุงเทพมหานคร, Thailand",
+      "search_query": "computer/electronics supplier, Bangkok, Thailand"
+    },
+    {
+      "source_engine": "photon",
+      "title": "ซ่อมคอมพิวเตอร์ โน๊ตบุคส์ ปริ้นเตอร์",
+      "url": "https://www.openstreetmap.org/N/10744573073",
+      "domain": "openstreetmap.org",
+      "snippet": "ถนนบางศรีเมือง, ตำบลบางศรีเมือง, บางศรีเมือง, จังหวัดนนทบุรี, Thailand",
+      "search_query": "computer/electronics supplier, Bangkok, Thailand"
+    },
+    {
+      "source_engine": "photon",
+      "title": "บริษัท เอเชีย จีเนียล จำกัด (Shop4Thai.com by AG)",
+      "url": "https://www.openstreetmap.org/N/4414072091",
+      "domain": "openstreetmap.org",
+      "snippet": "ถนนพระรามที่ 3, บางคอแหลม, กรุงเทพมหานคร, Thailand",
+      "search_query": "computer/electronics supplier, Bangkok, Thailand"
+    }
+  ]
+}

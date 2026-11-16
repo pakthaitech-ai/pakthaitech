@@ -1,0 +1,7 @@
+﻿Worker copies under D:\Horse 2:
+OTHER COPY`tD:\Horse 2\worker.js
+OTHER COPY`tD:\Horse 2\PAKTHAI-AUTO-SOURCING-ENGINE-FINAL\pakthai_auto_engine_bundle\worker.js
+MASTER`tD:\Horse 2\PakThai-Tech-AI-Sourcing-FINAL\src\worker.js
+OTHER COPY`tD:\Horse 2\PakThai-Tech-AI-Sourcing-Phase2\PakThai-Tech-AI-Sourcing-Phase2\src\worker.js
+OTHER COPY`tD:\Horse 2\PakThai-Tech-AI-Sourcing-Phase2\PakThai-Tech-AI-Sourcing-Phase2-OLD-BACKUP\src\worker.js
+OTHER COPY`tD:\Horse 2\PakThai-Tech-AI-Sourcing-Phase2-worker-corrected\worker.js

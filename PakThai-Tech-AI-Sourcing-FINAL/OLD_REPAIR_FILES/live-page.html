@@ -1,0 +1,309 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PAKTHAI TECH Ã¢â‚¬â€ AI Sourcing Engine</title>
+<style>
+body{font-family:Arial,sans-serif;margin:0;background:#f4f6fa;color:#111}
+header{background:#111827;color:#fff;padding:20px 24px;display:flex;justify-content:space-between;align-items:center}
+main{max-width:1200px;margin:24px auto;padding:0 16px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.card,.panel{background:#fff;border:1px solid #ddd;border-radius:14px;padding:18px;box-shadow:0 2px 8px #00000010}
+.card b{font-size:25px;display:block;margin-top:8px}
+nav{display:flex;gap:8px;margin:16px 0;flex-wrap:wrap}
+button{background:#111827;color:#fff;border:0;border-radius:9px;padding:10px 14px;cursor:pointer}
+button.alt{background:#e8edf5;color:#111827}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:10px;border-bottom:1px solid #eee;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+input,select{width:100%;box-sizing:border-box;padding:9px;border:1px solid #ccc;border-radius:8px;margin:5px 0 10px}
+label{font-size:13px;font-weight:600}
+@media(max-width:800px){.cards,.grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header><div><strong>PAKTHAI TECH</strong><div>AI Sourcing Engine</div></div><button onclick="sync()">Sync Source Catalog</button></header>
+<main>
+<div class="cards">
+<div class="card">Products<b id="products">Ã¢â‚¬â€</b></div>
+<div class="card">Sellers<b id="sellers">Ã¢â‚¬â€</b></div>
+<div class="card">Opportunities<b id="opps">Ã¢â‚¬â€</b></div>
+<div class="card">Active Zones<b id="zones">Ã¢â‚¬â€</b></div>
+</div>
+<nav>
+<button onclick="show('dashboard')">Dashboard</button>
+<button onclick="show('seller')">Seller Database</button>
+<button onclick="show('opportunity')">Small-Lot Calculator</button>
+<button onclick="show('opportunities');loadOpportunities()">Opportunities</button>
+<button onclick="show('history')">Seller History</button><button onclick="openBuyerCenter()">Pakistan Buyer Center</button>
+</nav>
+<section id="dashboard" class="panel"><h2>System Status</h2><p>Database connected. Small-lot sourcing is allowed. Owner approval remains required.</p><p>Customer-facing PakThai Tech remains separate from the upstream source.</p></section>
+
+<section id="seller" class="panel" style="display:none">
+<h2>Seller Database</h2>
+<div class="grid">
+<div><label>Name</label><input id="sname" placeholder="Seller / shop name"></div>
+<div><label>Contact</label><input id="scontact" placeholder="WhatsApp / phone / email"></div>
+<div><label>Country</label><input id="scountry" placeholder="Thailand"></div>
+<div><label>City</label><input id="scity" placeholder="Bangkok"></div>
+<div><label>Platform</label><input id="splatform" placeholder="Local shop / Marketplace / Contact"></div>
+<div><label>Seller type</label><select id="stype"><option>seller</option><option>supplier</option><option>shop</option><option>scrap</option><option>individual</option><option>buyer</option></select></div>
+</div>
+<button onclick="addSeller()">Save Seller</button>
+<div id="sellerList" style="margin-top:18px"></div>
+</section>
+
+<section id="opportunity" class="panel" style="display:none">
+<h2>Automatic Small-Lot Opportunity</h2>
+<p>Select a product + seller. The engine pulls Pakistan retail price and D1 cost settings automatically. Only quantity, seller asking price and distance need to be supplied for a fresh quote.</p>
+<div class="grid">
+<div><label>Product</label><select id="productSelect"></select></div>
+<div><label>Seller</label><select id="sellerSelect"></select></div>
+<div><label>Quantity</label><input id="q" type="number" value="2" min="1"></div>
+<div><label>Seller asking price / unit (PKR)</label><input id="ask" type="number" value="0" min="0"></div>
+<div><label>Pakistan retail / unit (auto)</label><input id="retail" type="number" value="0" readonly></div>
+<div><label>Target margin % (auto setting)</label><input id="margin" type="number" value="20" readonly></div>
+<div><label>Distance to seller (km)</label><input id="distance" type="number" value="0" min="0"></div>
+</div>
+<div style="margin-top:12px;padding:12px;border:1px solid #ccc;border-radius:8px"><b>Cost Controls - ON/OFF</b><br><label><input type="checkbox" id="costTravel" checked> Travel</label> <label><input type="checkbox" id="costPickup" checked> Pickup</label> <label><input type="checkbox" id="costPacking" checked> Packing</label> <label><input type="checkbox" id="costFreight" checked> Freight / Shipping</label> <label><input type="checkbox" id="costDuties" checked> Duties</label> <label><input type="checkbox" id="costPayment" checked> Payment</label> <label><input type="checkbox" id="costPakistan" checked> Pakistan Transport</label> <label><input type="checkbox" id="costContingency" checked> Contingency</label></div><br><button onclick="calculateAuto()">Calculate Automatically</button>
+<button class="alt" onclick="createOpportunity()">Create Opportunity Ã¢â‚¬â€ Owner Approval Pending</button>
+<div id="calcResult" style="margin-top:18px"></div>
+</section>
+<section id="opportunities" class="panel" style="display:none">
+<h2>Opportunities</h2>
+<p>Review sourcing opportunities. Purchases are not made automatically; owner approval is required.</p>
+<div id="opportunityList">Loading opportunities...</div>
+</section>
+<section id="history" class="panel" style="display:none">
+<h2>Seller History</h2><div id="historyList">LoadingÃ¢â‚¬Â¦</div>
+</section>
+</main>
+<script>
+async function api(p,o){return fetch(p,o).then(r=>r.json())}
+async function refresh(){
+ const [p,s,z,o]=await Promise.all([api('/api/products'),api('/api/sellers'),api('/api/zones'),api('/api/opportunities')]);
+ cachedProducts=p; cachedSellers=s;
+ products.textContent=p.length;sellers.textContent=s.length;zones.textContent=z.length;opps.textContent=o.length;
+ renderSellers(s);renderHistory();populateOpportunitySelectors();
+}
+function show(id){for(const x of ['dashboard','seller','opportunity','opportunities','history'])document.getElementById(x).style.display=x===id?'block':'none'}
+async function loadOpportunities(){
+ const box=document.getElementById('opportunityList');
+ if(!box)return;
+ box.textContent='Loading opportunities...';
+ try{
+  const r=await api('/api/approvals');
+  if(r.error)throw new Error(r.error);
+  const rows=Array.isArray(r.opportunities)?r.opportunities:[];
+  if(!rows.length){box.textContent='No opportunities found yet.';return;}
+  box.innerHTML='<div style="overflow-x:auto"><table><thead><tr><th>ID</th><th>Product</th><th>Seller</th><th>Qty</th><th>Asking/unit</th><th>Landed total</th><th>Expected profit</th><th>Margin</th><th>Approval</th><th>Action</th></tr></thead><tbody>'+
+   rows.map(x=>{
+    const status=String(x.approval_status||'pending').toLowerCase();
+    const actions=status==='pending'
+      ? '<button onclick="decideOpportunity('+Number(x.id)+','approved')">Approve</button> <button class="alt" onclick="decideOpportunity('+Number(x.id)+','rejected')">Reject</button>'
+      : esc(status);
+    return '<tr><td>'+Number(x.id)+'</td><td>'+esc(x.product_title||'â€”')+'</td><td>'+esc(x.seller_name||'â€”')+'</td><td>'+fmt(x.quantity)+'</td><td>PKR '+fmt(x.asking_price)+'</td><td>PKR '+fmt(x.landed_cost)+'</td><td>PKR '+fmt(x.expected_profit)+'</td><td>'+fmt(x.expected_margin_pct)+'%</td><td>'+esc(status)+'</td><td>'+actions+'</td></tr>';
+   }).join('')+'</tbody></table></div>';
+ }catch(e){box.textContent='Could not load opportunities: '+(e.message||String(e));}
+}
+async function decideOpportunity(id,decision){
+ const label=decision==='approved'?'approve':'reject';
+ if(!confirm('Are you sure you want to '+label+' Opportunity #'+id+'?'))return;
+ try{
+  const r=await api('/api/approvals',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({opportunity_id:id,decision})});
+  if(r.error)throw new Error(r.error);
+  alert('Opportunity #'+id+' '+decision+'.');
+  await loadOpportunities();
+  refresh();
+ }catch(e){alert('Approval action failed: '+(e.message||String(e)));}
+}
+async function addSeller(){
+ const b={name:sname.value,contact:scontact.value,country:scountry.value,city:scity.value,platform:splatform.value,seller_type:stype.value};
+ if(!b.name)return alert('Seller name is required');
+ await api('/api/sellers',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)});
+ sname.value='';scontact.value='';refresh();
+}
+function renderSellers(a){sellerList.innerHTML='<table><tr><th>Name</th><th>Location</th><th>Platform</th><th>Type</th><th>Status</th></tr>'+a.map(x=>'<tr><td>'+esc(x.name)+'</td><td>'+esc((x.city||'')+', '+(x.country||''))+'</td><td>'+esc(x.platform||'')+'</td><td>'+esc(x.seller_type||'')+'</td><td>'+esc(x.status||'')+'</td></tr>').join('')+'</table>'}
+async function renderHistory(){const a=await api('/api/seller-history');historyList.innerHTML='<table><tr><th>Seller</th><th>Product</th><th>Qty</th><th>Asking</th><th>Agreed</th><th>Outcome</th></tr>'+a.map(x=>'<tr><td>'+esc(x.seller_name)+'</td><td>'+esc(x.product_title||'')+'</td><td>'+x.quantity+'</td><td>'+x.asking_price+'</td><td>'+x.agreed_price+'</td><td>'+esc(x.outcome||'')+'</td></tr>').join('')+'</table>'}
+let lastAutomaticCalculation=null;
+let cachedProducts=[],cachedSellers=[];
+function populateOpportunitySelectors(){
+ productSelect.innerHTML=cachedProducts.map(x=>'<option value="'+x.id+'" data-price="'+(x.price_pkr||0)+'">'+esc(x.title)+' Ã¢â‚¬â€ PKR '+fmt(x.price_pkr)+'</option>').join('')||'<option value="">No products</option>';
+ sellerSelect.innerHTML=cachedSellers.map(x=>'<option value="'+x.id+'">'+esc(x.name)+' Ã¢â‚¬â€ '+esc((x.city||'')+', '+(x.country||''))+'</option>').join('')||'<option value="">No sellers</option>';
+ updateRetailFromProduct();
+}
+function updateRetailFromProduct(){const o=productSelect.options[productSelect.selectedIndex]; retail.value=o?Number(o.dataset.price||0):0;}
+productSelect.addEventListener('change',updateRetailFromProduct);
+async function calculateAuto(){
+ const b={product_id:productSelect.value,seller_id:sellerSelect.value,quantity:q.value,asking_price:ask.value,distance_km:distance.value,cost_enabled:{travel:document.getElementById(costTravel).checked,pickup:document.getElementById(costPickup).checked,packing:document.getElementById(costPacking).checked,freight:document.getElementById(costFreight).checked,duties:document.getElementById(costDuties).checked,payment:document.getElementById(costPayment).checked,pakistan_transport:document.getElementById(costPakistan).checked,contingency:document.getElementById(costContingency).checked}};
+ if(!b.product_id||!b.seller_id)return alert('Product aur Seller select karein.');
+ const x=await api('/api/opportunities/calculate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)});
+ if(x.error)return alert(x.error);
+ lastAutomaticCalculation=x; margin.value=x.target_margin_pct; retail.value=x.retail_price_pkr;
+ const c=x.cost_breakdown||{};
+ calcResult.innerHTML='<div class="card"><b>'+esc(x.classification)+'</b><p>Product: '+esc(x.product_title)+'</p><p>Seller: '+esc(x.seller_name)+'</p><p>Auto costs: Travel '+fmt(c.travel)+' | Pickup '+fmt(c.pickup)+' | Packing '+fmt(c.packing)+' | Freight '+fmt(c.freight)+' | Duties '+fmt(c.duties)+' | Payment '+fmt(c.payment)+' | Pakistan transport '+fmt(c.pakistan_transport)+' | Contingency '+fmt(c.contingency)+'</p><p>Landed total: PKR '+fmt(x.landed_total)+'</p><p>Landed/unit: PKR '+fmt(x.landed_per_unit)+'</p><p>Max buy/unit for target margin: PKR '+fmt(x.max_buy_per_unit)+'</p><p>Expected profit: PKR '+fmt(x.expected_profit)+'</p><p>Expected margin: '+fmt(x.expected_margin_pct)+'%</p><p>Approval: Pending Owner Approval</p>'+(x.warnings&&x.warnings.length?'<p><b>Settings note:</b> '+esc(x.warnings.join(', '))+'</p>':'')+'</div>';
+}
+async function createOpportunity(){
+ if(!lastAutomaticCalculation) await calculateAuto();
+ if(!lastAutomaticCalculation)return;
+ const b={product_id:productSelect.value,seller_id:sellerSelect.value,quantity:q.value,asking_price:ask.value,distance_km:distance.value,cost_enabled:{travel:document.getElementById(costTravel).checked,pickup:document.getElementById(costPickup).checked,packing:document.getElementById(costPacking).checked,freight:document.getElementById(costFreight).checked,duties:document.getElementById(costDuties).checked,payment:document.getElementById(costPayment).checked,pakistan_transport:document.getElementById(costPakistan).checked,contingency:document.getElementById(costContingency).checked}};
+ const r=await api('/api/opportunities',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)});
+ if(r.error)return alert(r.error);
+ alert('Opportunity #'+r.id+' created. Owner approval is pending.'); refresh();
+}
+async function sync(){
+ let start=0,done=false,total=0;
+ while(!done){const r=await api('/api/sync/source',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({start})});total+=r.saved;done=r.complete;start=r.next_start;if(!r.processed)break}
+ alert('Sync complete. Saved/updated '+total+' products in this run.');
+ refresh();
+}
+function fmt(n){return Number(n||0).toLocaleString(undefined,{maximumFractionDigits:2})}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+refresh();
+</script>
+<section id="buyercenter" class="panel" style="display:none">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap">
+<div>
+<h2>Pakistan Buyer Center</h2>
+<p>Pakistan buyers, requirements and automatic product matching.</p>
+</div>
+<button onclick="show('dashboard')">Back to Dashboard</button>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:20px">
+
+<div class="card">
+<h3>Add Pakistan Buyer</h3>
+<input id="buyerName" placeholder="Buyer name" style="width:100%;padding:10px;margin:5px 0">
+<input id="buyerPhone" placeholder="Phone / WhatsApp" style="width:100%;padding:10px;margin:5px 0">
+<input id="buyerWhatsapp" placeholder="WhatsApp" style="width:100%;padding:10px;margin:5px 0">
+<input id="buyerEmail" placeholder="Email" style="width:100%;padding:10px;margin:5px 0">
+<input id="buyerCity" value="Pakistan" placeholder="City" style="width:100%;padding:10px;margin:5px 0">
+<input id="buyerCompany" placeholder="Company" style="width:100%;padding:10px;margin:5px 0">
+<button onclick="addPakistanBuyer()">Save Buyer</button>
+</div>
+
+<div class="card">
+<h3>Buyer Requirement</h3>
+<select id="requirementBuyer" style="width:100%;padding:10px;margin:5px 0"></select>
+<input id="requirementKeyword" placeholder="Product keyword e.g. RTX 3060 / RAM / PSU" style="width:100%;padding:10px;margin:5px 0">
+<input id="requirementQty" type="number" value="1" min="1" placeholder="Quantity" style="width:100%;padding:10px;margin:5px 0">
+<input id="requirementBudget" type="number" value="0" placeholder="Maximum budget PKR" style="width:100%;padding:10px;margin:5px 0">
+<input id="requirementTarget" type="number" value="0" placeholder="Target price PKR" style="width:100%;padding:10px;margin:5px 0">
+<button onclick="savePakistanRequirement()">Save Requirement</button>
+</div>
+
+<div class="card">
+<h3>Automatic Matching</h3>
+<p>System will match buyer requirements with PakThai Tech products.</p>
+<button onclick="runPakistanMatching()">Run Buyer Matching</button>
+<div id="buyerMatchResult" style="margin-top:12px"></div>
+</div>
+
+</div>
+
+<div class="card" style="margin-top:20px">
+<h3>Pakistan Buyers</h3>
+<div id="buyerList">Loading...</div>
+</div>
+
+<div class="card" style="margin-top:20px">
+<h3>Buyer Requirements</h3>
+<div id="requirementList">Loading...</div>
+</div>
+</section>
+
+<script>
+async function openBuyerCenter(){
+  document.querySelectorAll('.panel').forEach(function(x){x.style.display='none';});
+  var el=document.getElementById('buyercenter');
+  if(el) el.style.display='block';
+  await loadBuyerCenter();
+}
+
+async function loadBuyerCenter(){
+  try{
+    var b=await api('/api/buyers');
+    var buyers=b.buyers||[];
+    var sel=document.getElementById('requirementBuyer');
+    if(sel){
+      sel.innerHTML=buyers.length
+        ? buyers.map(function(x){return '<option value="'+x.id+'">'+esc(x.name)+'</option>';}).join('')
+        : '<option value="">Add a buyer first</option>';
+    }
+
+    var list=document.getElementById('buyerList');
+    if(list){
+      list.innerHTML=buyers.length
+        ? buyers.map(function(x){
+            return '<div style="padding:8px 0;border-bottom:1px solid #ddd"><b>'+esc(x.name)+'</b> Ã¢â‚¬â€ '+esc(x.city||'Pakistan')+' Ã¢â‚¬â€ '+esc(x.phone||x.whatsapp||'')+'</div>';
+          }).join('')
+        : '<p>No Pakistan buyers yet.</p>';
+    }
+
+    var r=await api('/api/buyer-requirements');
+    var req=r.requirements||[];
+    var rl=document.getElementById('requirementList');
+    if(rl){
+      rl.innerHTML=req.length
+        ? req.map(function(x){
+            return '<div style="padding:8px 0;border-bottom:1px solid #ddd"><b>'+esc(x.buyer_name||'Buyer')+'</b> Ã¢â‚¬â€ '+esc(x.product_keyword||'')+' Ã¢â‚¬â€ Qty '+x.quantity+' Ã¢â‚¬â€ Budget PKR '+fmt(x.max_budget_pkr||0)+'</div>';
+          }).join('')
+        : '<p>No buyer requirements yet.</p>';
+    }
+  }catch(e){
+    alert(e.message||e);
+  }
+}
+
+async function addPakistanBuyer(){
+  var body={
+    name:(document.getElementById('buyerName').value||'').trim(),
+    phone:document.getElementById('buyerPhone').value,
+    whatsapp:document.getElementById('buyerWhatsapp').value,
+    email:document.getElementById('buyerEmail').value,
+    city:document.getElementById('buyerCity').value||'Pakistan',
+    country:'Pakistan',
+    company:document.getElementById('buyerCompany').value,
+    status:'active'
+  };
+  if(!body.name){alert('Buyer name is required.');return;}
+  var r=await api('/api/buyers',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});
+  if(r.error){alert(r.error);return;}
+  alert('Buyer saved successfully.');
+  await loadBuyerCenter();
+}
+
+async function savePakistanRequirement(){
+  var buyer=document.getElementById('requirementBuyer').value;
+  if(!buyer){alert('Add a buyer first.');return;}
+  var body={
+    buyer_id:Number(buyer),
+    product_keyword:document.getElementById('requirementKeyword').value,
+    quantity:Number(document.getElementById('requirementQty').value||1),
+    max_budget_pkr:Number(document.getElementById('requirementBudget').value||0),
+    target_price_pkr:Number(document.getElementById('requirementTarget').value||0),
+    notes:'',
+    status:'active'
+  };
+  if(!body.product_keyword){alert('Product keyword is required.');return;}
+  var r=await api('/api/buyer-requirements',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});
+  if(r.error){alert(r.error);return;}
+  alert('Buyer requirement saved.');
+  await loadBuyerCenter();
+}
+
+async function runPakistanMatching(){
+  var box=document.getElementById('buyerMatchResult');
+  box.innerHTML='Running automatic buyer matching...';
+  try{
+    var r=await api('/api/buyer-match/run',{method:'POST',headers:{'content-type':'application/json'},body:'{}'});
+    box.innerHTML='<b>Matching complete.</b> Created matches: '+(r.created||0);
+    await loadBuyerCenter();
+  }catch(e){
+    box.innerHTML='<span style="color:red">'+esc(e.message||String(e))+'</span>';
+  }
+}
+</script></body>
+</html>

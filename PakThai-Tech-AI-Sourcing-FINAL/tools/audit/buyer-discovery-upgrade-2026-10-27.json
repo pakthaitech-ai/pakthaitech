@@ -1,0 +1,309 @@
+{
+  "ran_at": "2026-10-27T12:53:11.847Z",
+  "source": "OpenStreetMap public business data; unverified prospects only",
+  "cities": [
+    "Faisalabad",
+    "Lahore",
+    "Karachi",
+    "Islamabad",
+    "Rawalpindi",
+    "Peshawar",
+    "Multan",
+    "Gujranwala",
+    "Sialkot"
+  ],
+  "phrases": [
+    "computer parts wholesaler",
+    "IT equipment supplier"
+  ],
+  "results_unique": 26,
+  "errors": [],
+  "prospects": [
+    {
+      "place_id": "web:ilink.com.pk",
+      "osm_type": "web",
+      "osm_id": "ilink.com.pk",
+      "business_name": "i.Link Systems & Solutions",
+      "address": "Pakistan; exact city/location unverified",
+      "website": "https://ilink.com.pk/",
+      "phone": "",
+      "discovery_query": "computer parts wholesaler (Pakistan-wide public-site fallback; requested city Faisalabad; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    },
+    {
+      "place_id": "web:umercomputers.com",
+      "osm_type": "web",
+      "osm_id": "umercomputers.com",
+      "business_name": "Umer Computers & Gaming",
+      "address": "Pakistan; exact city/location unverified",
+      "website": "https://umercomputers.com/",
+      "phone": "",
+      "discovery_query": "computer parts wholesaler (Pakistan-wide public-site fallback; requested city Faisalabad; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    },
+    {
+      "place_id": "web:pcbank.com.pk",
+      "osm_type": "web",
+      "osm_id": "pcbank.com.pk",
+      "business_name": "PC Bank",
+      "address": "Pakistan; exact city/location unverified",
+      "website": "https://pcbank.com.pk/",
+      "phone": "",
+      "discovery_query": "computer parts wholesaler (Pakistan-wide public-site fallback; requested city Faisalabad; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    },
+    {
+      "place_id": "web:zahcomputers.pk",
+      "osm_type": "web",
+      "osm_id": "zahcomputers.pk",
+      "business_name": "ZAH Computers",
+      "address": "Pakistan; exact city/location unverified",
+      "website": "https://zahcomputers.pk/",
+      "phone": "",
+      "discovery_query": "computer parts wholesaler (Pakistan-wide public-site fallback; requested city Faisalabad; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    },
+    {
+      "place_id": "web:galaxy.pk",
+      "osm_type": "web",
+      "osm_id": "galaxy.pk",
+      "business_name": "Galaxy Computers",
+      "address": "Pakistan; exact city/location unverified",
+      "website": "https://galaxy.pk/",
+      "phone": "",
+      "discovery_query": "computer parts wholesaler (Pakistan-wide public-site fallback; requested city Faisalabad; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    },
+    {
+      "place_id": "web:czone.com.pk",
+      "osm_type": "web",
+      "osm_id": "czone.com.pk",
+      "business_name": "Computer Zone (Czone)",
+      "address": "Pakistan; exact city/location unverified",
+      "website": "https://czone.com.pk/",
+      "phone": "",
+      "discovery_query": "computer parts wholesaler (Pakistan-wide public-site fallback; requested city Faisalabad; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    },
+    {
+      "place_id": "web:techtronics.pk",
+      "osm_type": "web",
+      "osm_id": "techtronics.pk",
+      "business_name": "Techtronics",
+      "address": "Pakistan; exact city/location unverified",
+      "website": "https://techtronics.pk/",
+      "phone": "",
+      "discovery_query": "computer parts wholesaler (Pakistan-wide public-site fallback; requested city Faisalabad; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    },
+    {
+      "place_id": "web:electrotraders.com.pk",
+      "osm_type": "web",
+      "osm_id": "electrotraders.com.pk",
+      "business_name": "Electro Traders",
+      "address": "Pakistan; exact city/location unverified",
+      "website": "https://electrotraders.com.pk/",
+      "phone": "",
+      "discovery_query": "computer parts wholesaler (Pakistan-wide public-site fallback; requested city Faisalabad; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    },
+    {
+      "place_id": "web:newtechpk.com",
+      "osm_type": "web",
+      "osm_id": "newtechpk.com",
+      "business_name": "New Technologies",
+      "address": "Pakistan; exact city/location unverified",
+      "website": "https://newtechpk.com/",
+      "phone": "",
+      "discovery_query": "computer parts wholesaler (Pakistan-wide public-site fallback; requested city Faisalabad; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    },
+    {
+      "place_id": "web:khanbrothers.net",
+      "osm_type": "web",
+      "osm_id": "khanbrothers.net",
+      "business_name": "Khan Brothers",
+      "address": "Pakistan; exact city/location unverified",
+      "website": "https://khanbrothers.net/",
+      "phone": "",
+      "discovery_query": "computer parts wholesaler (Pakistan-wide public-site fallback; requested city Faisalabad; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    },
+    {
+      "place_id": "web:www.olx.com.pk:other%20equipments%20for%20sale%20in%20malir%20cantonment%20%7C%20olx%20pakistan",
+      "osm_type": "web",
+      "osm_id": "www.olx.com.pk",
+      "business_name": "Other Equipments for sale in Malir Cantonment | OLX Pakistan",
+      "address": "Pakistan-wide web result; requested search city: Faisalabad; actual location unverified",
+      "website": "https://www.olx.com.pk",
+      "phone": "",
+      "discovery_query": "IT equipment supplier (web result; requested city Faisalabad; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    },
+    {
+      "place_id": "web:www.computerhope.com:what%20is%20a%20computer%3F",
+      "osm_type": "web",
+      "osm_id": "www.computerhope.com",
+      "business_name": "What Is a Computer?",
+      "address": "Pakistan-wide web result; requested search city: Lahore; actual location unverified",
+      "website": "https://www.computerhope.com",
+      "phone": "",
+      "discovery_query": "computer parts wholesaler (web result; requested city Lahore; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    },
+    {
+      "place_id": "web:www.geeksforgeeks.org:what%20is%20a%20computer%3F%20-%20geeksforgeeks",
+      "osm_type": "web",
+      "osm_id": "www.geeksforgeeks.org",
+      "business_name": "What is a Computer? - GeeksforGeeks",
+      "address": "Pakistan-wide web result; requested search city: Lahore; actual location unverified",
+      "website": "https://www.geeksforgeeks.org",
+      "phone": "",
+      "discovery_query": "computer parts wholesaler (web result; requested city Lahore; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    },
+    {
+      "place_id": "web:www.britannica.com:computer%20%7C%20definition%2C%20history%2C%20operating%20systems%2C%20%26%20facts%20%7C%20britannica",
+      "osm_type": "web",
+      "osm_id": "www.britannica.com",
+      "business_name": "Computer | Definition, History, Operating Systems, & Facts | Britannica",
+      "address": "Pakistan-wide web result; requested search city: Lahore; actual location unverified",
+      "website": "https://www.britannica.com",
+      "phone": "",
+      "discovery_query": "computer parts wholesaler (web result; requested city Lahore; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    },
+    {
+      "place_id": "web:www.czone.com.pk:computer%20zone%20pakistan%20%7C%20computer%20%26%20laptop%20prices%20in%20pakistan%20-%20gaming%20...",
+      "osm_type": "web",
+      "osm_id": "www.czone.com.pk",
+      "business_name": "Computer Zone Pakistan | Computer & Laptop Prices in Pakistan - Gaming ...",
+      "address": "Pakistan-wide web result; requested search city: Lahore; actual location unverified",
+      "website": "https://www.czone.com.pk",
+      "phone": "",
+      "discovery_query": "computer parts wholesaler (web result; requested city Lahore; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    },
+    {
+      "place_id": "web:zahcomputers.pk:zah%20computers%20%7C%20pakistan's%20premier%20pc%20hardware%20%26%20gaming%20specialist",
+      "osm_type": "web",
+      "osm_id": "zahcomputers.pk",
+      "business_name": "ZAH Computers | Pakistan's Premier PC Hardware & Gaming Specialist",
+      "address": "Pakistan-wide web result; requested search city: Lahore; actual location unverified",
+      "website": "https://zahcomputers.pk",
+      "phone": "",
+      "discovery_query": "computer parts wholesaler (web result; requested city Lahore; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    },
+    {
+      "place_id": "web:mustafacomputers.pk:mustafa%20computers%20%7C%20laptops%2C%20pcs%2C%20printers%20%26%20electronics%20in%20pakistan",
+      "osm_type": "web",
+      "osm_id": "mustafacomputers.pk",
+      "business_name": "Mustafa Computers | Laptops, PCs, Printers & Electronics in Pakistan",
+      "address": "Pakistan-wide web result; requested search city: Lahore; actual location unverified",
+      "website": "https://mustafacomputers.pk",
+      "phone": "",
+      "discovery_query": "computer parts wholesaler (web result; requested city Lahore; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    },
+    {
+      "place_id": "web:www.asifcomputers.com:asif%20computers%20%7C%20laptop%20price%20in%20pakistan%202026%20%2B%20warranty",
+      "osm_type": "web",
+      "osm_id": "www.asifcomputers.com",
+      "business_name": "Asif Computers | Laptop Price in Pakistan 2026 + Warranty",
+      "address": "Pakistan-wide web result; requested search city: Lahore; actual location unverified",
+      "website": "https://www.asifcomputers.com",
+      "phone": "",
+      "discovery_query": "computer parts wholesaler (web result; requested city Lahore; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    },
+    {
+      "place_id": "web:pcstore.pk:pcstore.pk",
+      "osm_type": "web",
+      "osm_id": "pcstore.pk",
+      "business_name": "Pcstore.pk",
+      "address": "Pakistan-wide web result; requested search city: Lahore; actual location unverified",
+      "website": "https://pcstore.pk",
+      "phone": "",
+      "discovery_query": "computer parts wholesaler (web result; requested city Lahore; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    },
+    {
+      "place_id": "web:olx.com.pk:other%20equipments%20for%20sale%20in%20malir%20cantonment%20%7C%20olx%20pakistan",
+      "osm_type": "web",
+      "osm_id": "olx.com.pk",
+      "business_name": "Other Equipments for sale in Malir Cantonment | OLX Pakistan",
+      "address": "Pakistan-wide web result; requested search city: Peshawar; actual location unverified",
+      "website": "https://www.olx.com.pk",
+      "phone": "",
+      "discovery_query": "IT equipment supplier (web result; requested city Peshawar; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    },
+    {
+      "place_id": "web:computerhope.com:what%20is%20a%20computer%3F",
+      "osm_type": "web",
+      "osm_id": "computerhope.com",
+      "business_name": "What Is a Computer?",
+      "address": "Pakistan-wide web result; requested search city: Multan; actual location unverified",
+      "website": "https://www.computerhope.com",
+      "phone": "",
+      "discovery_query": "computer parts wholesaler (web result; requested city Multan; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    },
+    {
+      "place_id": "web:geeksforgeeks.org:what%20is%20a%20computer%3F%20-%20geeksforgeeks",
+      "osm_type": "web",
+      "osm_id": "geeksforgeeks.org",
+      "business_name": "What is a Computer? - GeeksforGeeks",
+      "address": "Pakistan-wide web result; requested search city: Multan; actual location unverified",
+      "website": "https://www.geeksforgeeks.org",
+      "phone": "",
+      "discovery_query": "computer parts wholesaler (web result; requested city Multan; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    },
+    {
+      "place_id": "web:britannica.com:computer%20%7C%20definition%2C%20history%2C%20operating%20systems%2C%20%26%20facts%20%7C%20britannica",
+      "osm_type": "web",
+      "osm_id": "britannica.com",
+      "business_name": "Computer | Definition, History, Operating Systems, & Facts | Britannica",
+      "address": "Pakistan-wide web result; requested search city: Multan; actual location unverified",
+      "website": "https://www.britannica.com",
+      "phone": "",
+      "discovery_query": "computer parts wholesaler (web result; requested city Multan; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    },
+    {
+      "place_id": "web:czone.com.pk:computer%20zone%20pakistan%20%7C%20computer%20%26%20laptop%20prices%20in%20pakistan%20-%20gaming%20...",
+      "osm_type": "web",
+      "osm_id": "czone.com.pk",
+      "business_name": "Computer Zone Pakistan | Computer & Laptop Prices in Pakistan - Gaming ...",
+      "address": "Pakistan-wide web result; requested search city: Multan; actual location unverified",
+      "website": "https://www.czone.com.pk",
+      "phone": "",
+      "discovery_query": "computer parts wholesaler (web result; requested city Multan; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    },
+    {
+      "place_id": "web:asifcomputers.com:asif%20computers%20%7C%20laptop%20price%20in%20pakistan%202026%20%2B%20warranty",
+      "osm_type": "web",
+      "osm_id": "asifcomputers.com",
+      "business_name": "Asif Computers | Laptop Price in Pakistan 2026 + Warranty",
+      "address": "Pakistan-wide web result; requested search city: Multan; actual location unverified",
+      "website": "https://www.asifcomputers.com",
+      "phone": "",
+      "discovery_query": "computer parts wholesaler (web result; requested city Multan; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    },
+    {
+      "place_id": "web:forum.lowyat.net:those%20use%20ipon%20watsapp%20web%20browser%20-%20lowyat.net",
+      "osm_type": "web",
+      "osm_id": "forum.lowyat.net",
+      "business_name": "those use ipon watsapp web browser - Lowyat.NET",
+      "address": "Pakistan-wide web result; requested search city: Gujranwala; actual location unverified",
+      "website": "https://forum.lowyat.net",
+      "phone": "",
+      "discovery_query": "computer parts wholesaler (web result; requested city Gujranwala; actual city unverified)",
+      "discovery_city": "Unverified (Pakistan)"
+    }
+  ]
+}

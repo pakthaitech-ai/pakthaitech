@@ -1,0 +1,1 @@
+const fs=require('fs');const p='D:/pakthai/PakThai-Tech-AI-Sourcing-FINAL/wrangler.jsonc';let s=fs.readFileSync(p,'utf8');s=s.replace(/\n\s*"EMAIL_AUTO_REPLY_ENABLED": "true",/,'');fs.writeFileSync(p,s,'utf8');console.log('Removed local var override; remote Gmail enablement secret remains untouched.');
