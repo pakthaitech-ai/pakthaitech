@@ -1,4 +1,4 @@
-name: PakThai Daily Source Audit
+﻿name: PakThai Daily Source Audit
 
 on:
   workflow_dispatch:
@@ -8,10 +8,10 @@ on:
   push:
     branches: [main]
     paths:
-      - "src/**"
-      - "tools/**"
-      - "package.json"
-      - "package-lock.json"
+      - "PakThai-Tech-AI-Sourcing-FINAL/src/**"
+      - "PakThai-Tech-AI-Sourcing-FINAL/tools/**"
+      - "PakThai-Tech-AI-Sourcing-FINAL/package.json"
+      - "PakThai-Tech-AI-Sourcing-FINAL/package-lock.json"
       - ".github/workflows/**"
 
 permissions:
@@ -24,20 +24,23 @@ concurrency:
 jobs:
   audit:
     name: Tests and dependency security audit
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: PakThai-Tech-AI-Sourcing-FINAL
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Node.js 24
+        uses: actions/setup-node@v7
         with:
-          node-version: "22"
-          cache: npm
+          node-version: "24"
+          package-manager-cache: false
 
       - name: Install locked dependencies
-        run: npm ci
+        run: npm ci --no-audit --no-fund
 
       - name: Run project test suite
         run: npm test
@@ -50,13 +53,13 @@ jobs:
         continue-on-error: true
         run: |
           npm audit --json > npm-audit-full.json || true
-          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('npm-audit-full.json','utf8'));console.log(JSON.stringify(p.metadata?.vulnerabilities ?? {},null,2))"
+          node -e "const fs=require('node:fs');const p=JSON.parse(fs.readFileSync('npm-audit-full.json','utf8'));console.log(JSON.stringify(p.metadata?.vulnerabilities ?? {},null,2))"
 
       - name: Upload audit evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: pakthai-audit-evidence-${{ github.run_number }}
-          path: npm-audit-full.json
+          path: PakThai-Tech-AI-Sourcing-FINAL/npm-audit-full.json
           if-no-files-found: ignore
           retention-days: 30
