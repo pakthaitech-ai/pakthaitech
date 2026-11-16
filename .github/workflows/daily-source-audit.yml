@@ -28,20 +28,21 @@ jobs:
     timeout-minutes: 30
     defaults:
       run:
-        working-directory: .
+        working-directory: source/PakThai-Tech-AI-Sourcing-FINAL
         shell: powershell
     steps:
       - name: Clone source into isolated runner workspace
+        working-directory: .
         timeout-minutes: 10
         run: |
           $git = 'C:\Program Files\Git\cmd\git.exe'
-          $workspace = $env:GITHUB_WORKSPACE
+          $source = Join-Path $env:GITHUB_WORKSPACE 'source'
           $env:GIT_TERMINAL_PROMPT = '0'
           Write-Output "Runner identity: $([Security.Principal.WindowsIdentity]::GetCurrent().Name)"
-          Write-Output "Workspace: $workspace"
-          if (-not (Test-Path $workspace)) { New-Item -ItemType Directory -Force -Path $workspace | Out-Null }
-          Get-ChildItem $workspace -Force | Remove-Item -Recurse -Force
-          & $git -c http.sslBackend=openssl -c core.longpaths=true clone --filter=blob:none --no-checkout --depth 1 --single-branch --branch main https://github.com/pakthaitech-ai/pakthaitech.git $workspace
+          Write-Output "Source staging path: $source"
+          if (Test-Path $source) { Get-ChildItem $source -Force | Remove-Item -Recurse -Force }
+          New-Item -ItemType Directory -Force -Path $source | Out-Null
+          & $git -c http.sslBackend=openssl -c core.longpaths=true clone --filter=blob:none --no-checkout --depth 1 --single-branch --branch main https://github.com/pakthaitech-ai/pakthaitech.git $source
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $patterns = @(
             '/.github/workflows/',
@@ -49,42 +50,37 @@ jobs:
             '!/PakThai-Tech-AI-Sourcing-FINAL/_MASTER_CONTROL/snapshot/',
             '/PakThai-Store-DEPLOY/'
           )
-          $patterns | & $git -c http.sslBackend=openssl -c core.longpaths=true -C $workspace sparse-checkout set --no-cone --stdin
+          $patterns | & $git -c http.sslBackend=openssl -c core.longpaths=true -C $source sparse-checkout set --no-cone --stdin
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          & $git -c http.sslBackend=openssl -c core.longpaths=true -C $workspace checkout --detach HEAD
+          & $git -c http.sslBackend=openssl -c core.longpaths=true -C $source checkout --detach HEAD
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          $head = & $git -c safe.directory=* -C $workspace rev-parse HEAD
+          $head = & $git -c safe.directory=* -C $source rev-parse HEAD
           Write-Output "Checked out main at $head; workflow trigger was $env:GITHUB_SHA"
 
       - name: Confirm Node.js and npm
-        working-directory: PakThai-Tech-AI-Sourcing-FINAL
         run: |
           & 'C:\Program Files\nodejs\node.exe' --version
           & 'C:\Program Files\nodejs\npm.cmd' --version
 
       - name: Install locked dependencies
         id: install
-        working-directory: PakThai-Tech-AI-Sourcing-FINAL
         run: |
           & 'C:\Program Files\nodejs\npm.cmd' ci --no-audit --no-fund
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Run project test suite
-        working-directory: PakThai-Tech-AI-Sourcing-FINAL
         run: |
           & 'C:\Program Files\nodejs\npm.cmd' test
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Run production dependency audit
         if: always() && steps.install.outcome == 'success'
-        working-directory: PakThai-Tech-AI-Sourcing-FINAL
         run: |
           & 'C:\Program Files\nodejs\npm.cmd' audit --omit=dev --audit-level=moderate
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Run complete dependency audit
         if: always() && steps.install.outcome == 'success'
-        working-directory: PakThai-Tech-AI-Sourcing-FINAL
         run: |
           $env:PATH = 'C:\Program Files\nodejs;' + $env:PATH
           $report = Join-Path $env:RUNNER_TEMP "pakthai-npm-audit-full-$env:GITHUB_RUN_NUMBER.json"
