@@ -31,7 +31,7 @@ jobs:
         working-directory: D:/pakthai/PakThai-Tech-AI-Sourcing-FINAL
         shell: powershell
     steps:
-      - name: Verify local main checkout matches GitHub revision
+      - name: Verify local main checkout matches or contains GitHub revision
         working-directory: D:/pakthai
         run: |
           $git = 'C:\Program Files\Git\cmd\git.exe'
@@ -46,12 +46,18 @@ jobs:
           $head = & $git -c "safe.directory=$safe" -C $repo rev-parse HEAD
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           if ($head -ne $env:GITHUB_SHA) {
-            & $git -c "safe.directory=$safe" -C $repo pull --ff-only origin main
-            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-            $head = & $git -c "safe.directory=$safe" -C $repo rev-parse HEAD
+            & $git -c "safe.directory=$safe" -C $repo merge-base --is-ancestor $env:GITHUB_SHA $head
+            $ancestorExit = $LASTEXITCODE
+            if ($ancestorExit -ne 0) {
+              & $git -c "safe.directory=$safe" -C $repo pull --ff-only origin main
+              if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+              $head = & $git -c "safe.directory=$safe" -C $repo rev-parse HEAD
+              if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+              & $git -c "safe.directory=$safe" -C $repo merge-base --is-ancestor $env:GITHUB_SHA $head
+              if ($LASTEXITCODE -ne 0) { throw 'Local main does not contain the workflow trigger revision after fast-forward sync.' }
+            }
           }
-          if ($head -ne $env:GITHUB_SHA) { throw "Local HEAD $head does not match workflow revision $env:GITHUB_SHA." }
-          Write-Output "Auditing repository revision $head; branch $branch; working tree clean."
+          Write-Output "Auditing local main revision $head; trigger revision $env:GITHUB_SHA; working tree clean."
 
       - name: Confirm Node.js and npm
         run: |
