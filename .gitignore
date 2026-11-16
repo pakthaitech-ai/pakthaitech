@@ -1,0 +1,25 @@
+# Local credentials and browser sessions
+client_secret_*.json
+credentials*.json
+token*.json
+*.pem
+*.key
+edge-cdp-profile/
+cdp-tabs.json
+current-screen.png
+
+# Runtime and generated state
+**/node_modules/
+**/.wrangler/
+**/.env
+**/.env.*
+!.env.example
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.log
+
+# Local installers and machine-specific artifacts
+*.exe
+*.msi
+*.winmd

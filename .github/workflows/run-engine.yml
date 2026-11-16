@@ -43,6 +43,15 @@ jobs:
       - name: Run full automated test suite
         run: npm test
 
+      - name: Validate Store and legacy source syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check ../PakThai-Store-DEPLOY/app.js
+          node --check ../PakThai-Store-DEPLOY/functions/catalog.js
+          node --check ../PAKTHAI_MASTER_WORKER_CURRENT.js
+          node -e "JSON.parse(require('node:fs').readFileSync('../PakThai-Store-DEPLOY/manifest.webmanifest', 'utf8')); console.log('Store manifest JSON is valid')"
+
       - name: Check live PakThai services (read-only)
         shell: bash
         run: |

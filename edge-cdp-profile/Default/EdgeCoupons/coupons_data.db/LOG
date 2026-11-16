@@ -1,9 +1,0 @@
-2026/10/23-16:39:42.409 2310 Reusing MANIFEST D:\pakthai\edge-cdp-profile\Default\EdgeCoupons/coupons_data.db/MANIFEST-000001
-2026/10/23-16:39:42.410 2310 Recovering log #4
-2026/10/23-16:39:42.410 2310 Reusing old log D:\pakthai\edge-cdp-profile\Default\EdgeCoupons/coupons_data.db/000004.log 
-2026/10/23-16:39:42.496 2cf8 Level-0 table #8: started
-2026/10/23-16:39:42.509 2cf8 Level-0 table #8: 683444 bytes OK
-2026/10/23-16:39:42.515 2cf8 Delete type=0 #4
-2026/10/25-10:34:24.526 2cf8 Level-0 table #10: started
-2026/10/25-10:34:24.546 2cf8 Level-0 table #10: 683411 bytes OK
-2026/10/25-10:34:24.557 2cf8 Delete type=0 #7

@@ -1,1 +1,0 @@
-This folder contains the built output assets for the worker "pakthai-ai-sourcing" generated at 2026-10-15T04:29:21.594Z.
