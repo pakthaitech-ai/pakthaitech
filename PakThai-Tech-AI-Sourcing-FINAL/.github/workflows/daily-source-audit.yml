@@ -1,0 +1,62 @@
+name: PakThai Daily Source Audit
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 07:00 Pakistan Standard Time (UTC+5)
+    - cron: "0 2 * * *"
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "tools/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pakthai-source-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    name: Tests and dependency security audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Run project test suite
+        run: npm test
+
+      - name: Run production dependency audit
+        continue-on-error: true
+        run: npm audit --omit=dev --audit-level=moderate
+
+      - name: Run complete dependency audit
+        continue-on-error: true
+        run: |
+          npm audit --json > npm-audit-full.json || true
+          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('npm-audit-full.json','utf8'));console.log(JSON.stringify(p.metadata?.vulnerabilities ?? {},null,2))"
+
+      - name: Upload audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pakthai-audit-evidence-${{ github.run_number }}
+          path: npm-audit-full.json
+          if-no-files-found: ignore
+          retention-days: 30
