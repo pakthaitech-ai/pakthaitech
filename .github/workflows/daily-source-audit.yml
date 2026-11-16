@@ -29,9 +29,16 @@ jobs:
     defaults:
       run:
         working-directory: PakThai-Tech-AI-Sourcing-FINAL
+        shell: powershell
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            /*
+            !/PakThai-Tech-AI-Sourcing-FINAL/_MASTER_CONTROL/snapshot/
+          sparse-checkout-cone-mode: false
 
       - name: Set up Node.js 24
         uses: actions/setup-node@v7

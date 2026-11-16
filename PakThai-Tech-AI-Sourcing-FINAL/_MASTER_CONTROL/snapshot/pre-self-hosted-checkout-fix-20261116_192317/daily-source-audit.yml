@@ -1,0 +1,62 @@
+name: PakThai Daily Source Audit
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 07:00 Pakistan Standard Time (UTC+5)
+    - cron: "0 2 * * *"
+  push:
+    branches: [main]
+    paths:
+      - "PakThai-Tech-AI-Sourcing-FINAL/src/**"
+      - "PakThai-Tech-AI-Sourcing-FINAL/tools/**"
+      - "PakThai-Tech-AI-Sourcing-FINAL/package.json"
+      - "PakThai-Tech-AI-Sourcing-FINAL/package-lock.json"
+      - ".github/workflows/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pakthai-source-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    name: Tests and dependency security audit
+    runs-on: [self-hosted, Windows, X64]
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: PakThai-Tech-AI-Sourcing-FINAL
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js 24
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          package-manager-cache: false
+
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Run project test suite
+        run: npm test
+
+      - name: Run production dependency audit
+        run: npm audit --omit=dev --audit-level=moderate
+
+      - name: Run complete dependency audit
+        if: always()
+        run: npm audit --json > npm-audit-full.json
+
+      - name: Upload audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pakthai-audit-evidence-${{ github.run_number }}
+          path: PakThai-Tech-AI-Sourcing-FINAL/npm-audit-full.json
+          if-no-files-found: ignore
+          retention-days: 30
