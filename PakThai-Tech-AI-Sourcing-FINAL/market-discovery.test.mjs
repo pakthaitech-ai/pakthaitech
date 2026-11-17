@@ -56,6 +56,50 @@ test("market buyer discovery rejects Photon results outside radius and irrelevan
   }
 });
 
+test("web-search buyer fallback does not assign a market country without a country-code domain", async () => {
+  const originalFetch = globalThis.fetch;
+  const inserted = [];
+  let host = "example.com";
+  const db = {
+    async batch(statements) { return Promise.all(statements.map(statement => statement.run())); },
+    prepare(sql) {
+      let args = [];
+      return {
+        bind(...values) { args = values; return this; },
+        async first() {
+          if (sql.includes("SELECT value FROM settings")) return { value: "true" };
+          return null;
+        },
+        async all() { return { results: [] }; },
+        async run() {
+          if (sql.includes("INSERT INTO external_prospects")) inserted.push(args);
+          return { meta: { changes: 1 } };
+        }
+      };
+    }
+  };
+  globalThis.fetch = async input => {
+    const url = new URL(String(input));
+    if (url.hostname.includes("overpass")) return new Response("temporarily unavailable", { status: 503 });
+    if (url.hostname === "photon.komoot.io") return Response.json({ features: [] });
+    if (url.hostname === "www.bing.com") {
+      return new Response("<rss><channel><item><title>Computer Electronics Retailer</title><link>https://" + host + "/</link><description>Computer and electronics retailer</description></item></channel></rss>", { status: 200 });
+    }
+    throw new Error("Unexpected mocked URL: " + url);
+  };
+  try {
+    const globalResult = await runMarketBuyerDiscovery(db, "Thailand");
+    assert.equal(globalResult.ok, true, globalResult.error);
+    assert.equal(inserted[0][6], null, "global .com results must remain country-unverified");
+    host = "shop.example.co.th";
+    const localResult = await runMarketBuyerDiscovery(db, "Thailand");
+    assert.equal(localResult.ok, true, localResult.error);
+    assert.equal(inserted[1][6], "Thailand", "a Thai country-code domain can retain the target country");
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test("market buyer discovery batches 60+ public leads in one D1 call", async () => {
   const originalFetch = globalThis.fetch;
   const inserted = [];

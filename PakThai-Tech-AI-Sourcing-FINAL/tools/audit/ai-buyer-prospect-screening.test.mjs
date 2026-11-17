@@ -7,7 +7,7 @@ function makeEnv({ assessment = "Potential buyer fit: high\nEvidence: The listin
   const queries = [];
   const prospects = rows || [{
     id: 17, title: "Bangkok Computer Retailer", url: "https://buyer.example",
-    domain: "buyer.example", snippet: "Computer and IT products retailer",
+    domain: "buyer.example.co.th", snippet: "Computer and IT products retailer",
     search_query: "computer retailer Bangkok", country: "Thailand", owner_notes: ""
   }];
   const db = {
@@ -90,6 +90,30 @@ test("screening processes a bounded batch and persists progress for later schedu
   assert.equal(result.remaining_unassessed, 4);
   assert.equal(result.status, "in_progress");
   assert.ok(ctx.writes.some(x => x.sql.includes("buyer_screening_last_status")));
+});
+
+test("unverified global domains cannot be marked as high-fit local buyers", async () => {
+  const ctx = makeEnv({ rows: [{
+    id: 44, title: "Computers & Tablets - Best Buy", url: "https://www.bestbuy.com",
+    domain: "bestbuy.com", snippet: "Computer and electronics retailer",
+    search_query: "computer retailer Bangkok Thailand", country: "",
+    owner_notes: ""
+  }] });
+  const result = await runAIBuyerProspectScreening(ctx.env);
+  assert.equal(result.high_fit, 0);
+  assert.equal(result.awaiting_verification, 1);
+});
+
+test("download and support pages cannot be marked as high-fit buyers", async () => {
+  const ctx = makeEnv({ rows: [{
+    id: 45, title: "Downloads | TSC Printers", url: "https://apac.tscprinters.com",
+    domain: "apac.tscprinters.com", snippet: "Printer drivers and manuals",
+    search_query: "computer retailer Pyeongtaek South Korea", country: "South Korea",
+    owner_notes: ""
+  }] });
+  const result = await runAIBuyerProspectScreening(ctx.env);
+  assert.equal(result.high_fit, 0);
+  assert.equal(result.awaiting_verification, 1);
 });
 
 test("buyer screening falls back when the primary model returns empty output", async () => {

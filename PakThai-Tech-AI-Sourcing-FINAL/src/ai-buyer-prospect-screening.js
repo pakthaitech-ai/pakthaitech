@@ -73,6 +73,7 @@ export async function runAIBuyerProspectScreening(env) {
         "Important: a retailer or distributor selling IT products is only a potential channel fit. Do not claim it wants to buy from PakThai Tech or has buying intent unless the supplied text explicitly proves that.",
         "Do not infer identity, purchasing volume, contact validity, budget, current demand, import ability or willingness to buy.",
         "The search query is OUR search phrase, not a query made by the business. Never use it as evidence of the business buying intent.",
+        "The country field is the only supplied market attribution. If it is blank, country and local-market fit are unverified; do not infer them from the search query.",
         "A map listing or a name that sounds like a product is not enough to call a high-fit buyer. Require explicit evidence in the business title, snippet or independent business domain.",
         "Return concise plain text with these exact labels: Potential buyer fit (high/medium/low), Evidence, Buyer intent evidence, Missing checks, Suggested next step.",
         "High means the supplied listing itself clearly identifies an IT/computer/electronics retailer, reseller, wholesaler, distributor or business IT procurement organisation that could plausibly be a channel/customer. It does not mean verified demand.",
@@ -123,8 +124,11 @@ export async function runAIBuyerProspectScreening(env) {
       const domain = String(row.domain || "").toLowerCase().replace(/^www\./, "");
       const evidenceText = [row.title, row.snippet, row.domain].map(x => String(x || "")).join(" ");
       const mapOnlySource = domain === "openstreetmap.org";
-      const explicitBusinessFit = /\b(computer|pc|electronics?|hardware|laptop|gaming|it products?|technology|wholesale|distributor|reseller|retailer|peripherals?|components?|compuzone|itcity|powerbuy|digital2home|advice\.co\.th|bnn\.in\.th|jib\.co\.th)\b/i.test(evidenceText);
-      const highFit = modelHighFit && explicitBusinessFit && !mapOnlySource;
+      const country = String(row.country || "");
+      const countryVerified = (country === "Thailand" && domain.endsWith(".th")) || (country === "South Korea" && domain.endsWith(".kr"));
+      const explicitBusinessFit = /\b(computer|pc|electronics?|hardware|laptop|gaming|it products?|wholesale|distributor|reseller|retail(?:er)?|store|shop|mall|peripherals?|components?|compuzone|computerzone|icoda|joyzen|junicom|leekangmall|pcforman|himart|itcity|powerbuy|digital2home|advice|bnn|jib)\b/i.test(evidenceText);
+      const obviousContentPage = /\b(downloads?|drivers?|support|manuals?|tutorials?|definitions?|history|forums?|blogs?|articles?|magazines?|courses?|documentation|how to|what is)\b/i.test(evidenceText);
+      const highFit = modelHighFit && explicitBusinessFit && countryVerified && !mapOnlySource && !obviousContentPage;
       const existing = String(row.owner_notes || "").trim();
       const disposition = highFit ? "HIGH_POTENTIAL_FIT_UNVERIFIED" : "OWNER_VERIFICATION_REQUIRED";
       const note = "AI_BUYER_SCREEN: " + startedAt + "\n" + assessment +

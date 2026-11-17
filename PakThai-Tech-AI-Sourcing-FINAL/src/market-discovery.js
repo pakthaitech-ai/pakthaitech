@@ -40,8 +40,8 @@ async function ensureSchema(db) {
     last_seen_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, country TEXT
   )`).run();
   try { await db.prepare("ALTER TABLE external_prospects ADD COLUMN country TEXT").run(); } catch (_) {}
-  await db.prepare("UPDATE external_prospects SET country='Thailand' WHERE (country IS NULL OR country='') AND search_query LIKE '%Thailand%'").run();
-  await db.prepare("UPDATE external_prospects SET country='South Korea' WHERE (country IS NULL OR country='') AND search_query LIKE '%South Korea%'").run();
+  await db.prepare("UPDATE external_prospects SET country='Thailand' WHERE (country IS NULL OR country='') AND search_query LIKE '%Thailand%' AND source_engine <> 'web-search-unverified-buyer'").run();
+  await db.prepare("UPDATE external_prospects SET country='South Korea' WHERE (country IS NULL OR country='') AND search_query LIKE '%South Korea%' AND source_engine <> 'web-search-unverified-buyer'").run();
 }
 
 async function discoverBuyers(country, market) {
@@ -248,11 +248,16 @@ export async function runMarketBuyerDiscovery(db, country) {
     const items = await discoverBuyers(country, market);
     // Batch writes so a broad map result cannot exhaust the Worker subrequest budget.
     // Discovery caps the result set at 80 rows, within D1 batch statement limits.
-    const statements = items.map(item => db.prepare(`INSERT INTO external_prospects
+    const statements = items.map(item => {
+      const host = String(item.domain || "").toLowerCase().replace(/^www\./, "");
+      const hasMarketCountryDomain = market.countryCode === "th" ? host.endsWith(".th") : host.endsWith(".kr");
+      const storedCountry = item.source_engine === "web-search-unverified-buyer" && !hasMarketCountryDomain ? null : country;
+      return db.prepare(`INSERT INTO external_prospects
         (prospect_type,source_engine,title,url,domain,snippet,search_query,review_status,first_seen_at,last_seen_at,country)
         VALUES('buyer',?,?,?,?,?,?,'unreviewed',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,?)
         ON CONFLICT(url) DO UPDATE SET title=excluded.title,domain=excluded.domain,snippet=excluded.snippet,search_query=excluded.search_query,country=excluded.country,last_seen_at=CURRENT_TIMESTAMP`)
-        .bind(item.source_engine,item.title,item.url,item.domain,item.snippet,item.search_query,country));
+        .bind(item.source_engine,item.title,item.url,item.domain,item.snippet,item.search_query,storedCountry);
+    });
     const writeResults = statements.length ? await db.batch(statements) : [];
     const saved = writeResults.reduce((count, result) => count + (Number(result?.meta?.changes || 0) > 0 ? 1 : 0), 0);
     const result = { ok: true, country, city: market.city, ran_at: started, source: "OpenStreetMap/Overpass with Photon fallback", results_seen: items.length, saved_or_refreshed: saved, note: "Unverified public business leads only. No outreach, buyer accounts, quotes, orders or commitments were created." };
