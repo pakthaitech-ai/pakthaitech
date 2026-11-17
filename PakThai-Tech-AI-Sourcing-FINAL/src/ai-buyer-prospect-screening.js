@@ -2,6 +2,7 @@
 // Assess potential business fit only; never infer buying intent or create buyer records.
 const MODEL = "@cf/google/gemma-4-26b-a4b-it";
 const FALLBACK_MODEL = "@cf/meta/llama-3.2-1b-instruct";
+const MAX_SCREENING_PER_RUN = 4;
 
 function extractAssessment(response) {
   const candidates = [
@@ -53,17 +54,26 @@ export async function runAIBuyerProspectScreening(env) {
       country TEXT
     )`).run();
 
+    const saveProgress = async status => {
+      summary.status = status;
+      await env.DB.prepare("INSERT INTO settings(key,value) VALUES('buyer_screening_last_status',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value")
+        .bind(JSON.stringify(summary)).run();
+    };
+    await saveProgress("running");
+
     const rows = await env.DB.prepare(`SELECT id,title,url,domain,snippet,search_query,country,owner_notes
       FROM external_prospects
       WHERE prospect_type='buyer' AND review_status='unreviewed'
         AND COALESCE(owner_notes,'') NOT LIKE '%AI_BUYER_SCREENED:%'
-      ORDER BY id ASC LIMIT 10`).all();
+      ORDER BY id ASC LIMIT ${MAX_SCREENING_PER_RUN}`).all();
 
     for (const row of (rows.results || [])) {
       const prompt = [
         "Assess whether this public business listing appears to be a plausible B2B customer/channel buyer for computer components, peripherals and IT hardware.",
         "Important: a retailer or distributor selling IT products is only a potential channel fit. Do not claim it wants to buy from PakThai Tech or has buying intent unless the supplied text explicitly proves that.",
         "Do not infer identity, purchasing volume, contact validity, budget, current demand, import ability or willingness to buy.",
+        "The search query is OUR search phrase, not a query made by the business. Never use it as evidence of the business buying intent.",
+        "A map listing or a name that sounds like a product is not enough to call a high-fit buyer. Require explicit evidence in the business title, snippet or independent business domain.",
         "Return concise plain text with these exact labels: Potential buyer fit (high/medium/low), Evidence, Buyer intent evidence, Missing checks, Suggested next step.",
         "High means the supplied listing itself clearly identifies an IT/computer/electronics retailer, reseller, wholesaler, distributor or business IT procurement organisation that could plausibly be a channel/customer. It does not mean verified demand.",
         "Listing title: " + String(row.title || "").slice(0, 240),
@@ -105,12 +115,21 @@ export async function runAIBuyerProspectScreening(env) {
       if (!assessment) {
         summary.failed++;
         summary.last_error = summary.last_error || primaryError || "Primary and fallback AI models returned no usable assessment";
+        await saveProgress("partial");
         continue;
       }
 
-      const highFit = /potential buyer fit\s*:\s*high/i.test(assessment);
+      const modelHighFit = /potential buyer fit\s*:\s*high/i.test(assessment);
+      const domain = String(row.domain || "").toLowerCase().replace(/^www\./, "");
+      const evidenceText = [row.title, row.snippet, row.domain].map(x => String(x || "")).join(" ");
+      const mapOnlySource = domain === "openstreetmap.org";
+      const explicitBusinessFit = /\b(computer|pc|electronics?|hardware|laptop|gaming|it products?|technology|wholesale|distributor|reseller|retailer|peripherals?|components?|compuzone|itcity|powerbuy|digital2home|advice\.co\.th|bnn\.in\.th|jib\.co\.th)\b/i.test(evidenceText);
+      const highFit = modelHighFit && explicitBusinessFit && !mapOnlySource;
       const existing = String(row.owner_notes || "").trim();
+      const disposition = highFit ? "HIGH_POTENTIAL_FIT_UNVERIFIED" : "OWNER_VERIFICATION_REQUIRED";
       const note = "AI_BUYER_SCREEN: " + startedAt + "\n" + assessment +
+        "\nSCREENING_DISPOSITION: " + disposition +
+        "\nScreening guard: search phrases and map-only listings are not evidence of buyer intent or high fit." +
         "\nAI_BUYER_SCREENED: " + startedAt;
       await env.DB.prepare(`UPDATE external_prospects SET owner_notes=?
         WHERE id=? AND prospect_type='buyer' AND review_status='unreviewed'
@@ -120,6 +139,7 @@ export async function runAIBuyerProspectScreening(env) {
       summary.processed++;
       if (highFit) summary.high_fit++;
       else summary.awaiting_verification++;
+      await saveProgress("running");
     }
 
     summary.ok = summary.failed === 0;
@@ -131,6 +151,8 @@ export async function runAIBuyerProspectScreening(env) {
     summary.error = String(error?.message || error).slice(0, 250);
   }
 
+  summary.ok = !summary.error && summary.failed === 0;
+  summary.status = summary.error ? (summary.processed ? "partial" : "failed") : summary.failed ? "partial" : Number(summary.remaining_unassessed || 0) > 0 ? "in_progress" : "complete";
   await env.DB.prepare("INSERT INTO settings(key,value) VALUES('buyer_screening_last_status',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value")
     .bind(JSON.stringify(summary)).run();
   await env.DB.prepare("INSERT INTO settings(key,value) VALUES('buyer_screening_last_run_at',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value")

@@ -5,7 +5,7 @@
   "compatibility_date": "2026-09-25",
   "vars": {
     "OUTBOUND_EMAIL_PROVIDER": "gmail",
-    "EMAIL_AUTO_REPLY_ENABLED": "true",
+    "EMAIL_AUTO_REPLY_ENABLED": "false",
     "WHATSAPP_AUTOMATION_ENABLED": "false",
     "VAPID_PUBLIC_KEY": "BE99XW8PVfT2WXPTuTyvxpoIaXGESeaGY84HS4pK5d0LYrq8duIOL4F8zns-DEvESIxkstP4DjY7LyhiDwDji9w",
     "VAPID_SUBJECT": "mailto:pakthaitech@gmail.com"

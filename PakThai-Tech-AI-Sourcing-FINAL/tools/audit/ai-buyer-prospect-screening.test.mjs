@@ -18,11 +18,17 @@ function makeEnv({ assessment = "Potential buyer fit: high\nEvidence: The listin
         bind(...values) { params = values; return stmt; },
         async run() { writes.push({ sql, params }); return { meta: { changes: 1 } }; },
         async all() {
-          if (sql.includes("FROM external_prospects") && sql.includes("SELECT id,title")) return { results: prospects };
+          if (sql.includes("FROM external_prospects") && sql.includes("SELECT id,title")) {
+            const limit = Number(sql.match(/LIMIT\s+(\d+)/i)?.[1] || prospects.length);
+            return { results: prospects.slice(0, limit) };
+          }
           return { results: [] };
         },
         async first() {
-          if (sql.includes("COUNT(*) AS n")) return { n: 0 };
+          if (sql.includes("COUNT(*) AS n")) {
+            const screened = new Set(writes.filter(x => x.sql.includes("UPDATE external_prospects SET owner_notes")).map(x => x.params[1]));
+            return { n: Math.max(0, prospects.length - screened.size) };
+          }
           return null;
         }
       };
@@ -57,6 +63,33 @@ test("medium buyer fit remains an unverified hint and does not create a buyer", 
   assert.equal(result.high_fit, 0);
   assert.equal(result.awaiting_verification, 1);
   assert.equal(ctx.writes.some(x => x.sql.includes("INSERT INTO buyers")), false);
+});
+
+test("map-only listings cannot be classified as high fit even if the model says high", async () => {
+  const ctx = makeEnv({ rows: [{
+    id: 28, title: "Cubic Creative PlayCube", url: "https://www.openstreetmap.org/node/1706581663",
+    domain: "openstreetmap.org", snippet: "", search_query: "computer electronics retailer Bangkok",
+    country: "Thailand", owner_notes: ""
+  }] });
+  const result = await runAIBuyerProspectScreening(ctx.env);
+  assert.equal(result.high_fit, 0);
+  assert.equal(result.awaiting_verification, 1);
+  const update = ctx.writes.find(x => x.sql.includes("UPDATE external_prospects SET owner_notes"));
+  assert.match(update.params[0], /SCREENING_DISPOSITION: OWNER_VERIFICATION_REQUIRED/);
+});
+
+test("screening processes a bounded batch and persists progress for later scheduled runs", async () => {
+  const rows = Array.from({ length: 8 }, (_, i) => ({
+    id: i + 1, title: "Computer Retailer " + i, url: "https://retailer" + i + ".example",
+    domain: "retailer" + i + ".example", snippet: "Computer hardware retailer",
+    search_query: "computer retailer Bangkok", country: "Thailand", owner_notes: ""
+  }));
+  const ctx = makeEnv({ rows });
+  const result = await runAIBuyerProspectScreening(ctx.env);
+  assert.equal(result.processed, 4);
+  assert.equal(result.remaining_unassessed, 4);
+  assert.equal(result.status, "in_progress");
+  assert.ok(ctx.writes.some(x => x.sql.includes("buyer_screening_last_status")));
 });
 
 test("buyer screening falls back when the primary model returns empty output", async () => {
