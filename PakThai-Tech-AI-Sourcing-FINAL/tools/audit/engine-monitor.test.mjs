@@ -39,9 +39,13 @@ test("engine monitor is Owner-protected and reports safe read-only status fields
   assert.equal(data.ok, true);
   assert.equal(data.engine_monitor.catalog_sync.status, "not_run");
   assert.equal(data.engine_monitor.ai_screening.status, "not_run");
+  assert.equal(data.engine_monitor.buyer_screening.status, "not_run");
+  assert.equal(data.engine_monitor.market_discovery.thailand.status, "not_run");
+  assert.equal(data.engine_monitor.market_discovery.south_korea.status, "not_run");
   assert.equal(data.engine_monitor.business_readiness.buyers, 0);
+  assert.equal(data.engine_monitor.business_readiness.buyer_prospects, 0);
   assert.equal(data.engine_monitor.business_readiness.opportunities, 0);
-  assert.equal(data.engine_monitor.business_readiness.note, "Counts are real database records; no synthetic opportunities are created.");
+  assert.equal(data.engine_monitor.business_readiness.note, "Prospects are unverified leads; buyers, requirements, sellers and opportunities are separate real business records.");
   assert.equal(JSON.stringify(data).includes("SESSION_SIGNING_SECRET"), false);
 });
 
